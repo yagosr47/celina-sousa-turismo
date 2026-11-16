@@ -1,0 +1,227 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Phone,
+  Instagram,
+  Mail,
+  MapPin,
+  Clock,
+  ShieldCheck,
+  MessageCircle,
+  ArrowUpRight,
+} from 'lucide-react';
+import BrandLogo from './BrandLogo';
+import { useApp } from '../context/AppContext';
+import { buildWhatsAppUrl } from '../lib/api';
+
+export default function Footer() {
+  const { siteData, openBookingModal } = useApp();
+  const settings = siteData.settings || {};
+
+  const whatsappUrl = buildWhatsAppUrl(
+    settings.whatsapp_number,
+    'Olá Celina! Vim pelo site da Celina Sousa Turismo e gostaria de falar com o atendimento.'
+  );
+
+  return (
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Col 1: Brand */}
+          <div className="space-y-4">
+            <Link to="/">
+              <BrandLogo variant="dark" size="md" />
+            </Link>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              {settings.footer_text ||
+                'Celina Sousa Turismo — Caldas Locações. Atendimento especializado em turismo, clubes, locações e viagens.'}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </a>
+              <a
+                href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 transition-colors"
+              >
+                <Instagram className="w-4 h-4 text-brand-400" />
+                {settings.instagram_handle || '@celinasousaturismo'}
+                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+              </a>
+            </div>
+          </div>
+
+          {/* Col 2: Navigation */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
+              Navegação Rápida
+            </h3>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link to="/" className="hover:text-brand-300 transition-colors">
+                  Página Inicial
+                </Link>
+              </li>
+              <li>
+                <Link to="/clubes" className="hover:text-brand-300 transition-colors">
+                  Clubes e Destinos
+                </Link>
+              </li>
+              <li>
+                <Link to="/viagens" className="hover:text-brand-300 transition-colors">
+                  Viagens e Pacotes
+                </Link>
+              </li>
+              <li>
+                <Link to="/sobre" className="hover:text-brand-300 transition-colors">
+                  Sobre a Empresa
+                </Link>
+              </li>
+              <li>
+                <Link to="/perguntas-frequentes" className="hover:text-brand-300 transition-colors">
+                  Perguntas Frequentes
+                </Link>
+              </li>
+              <li>
+                <Link to="/contato" className="hover:text-brand-300 transition-colors">
+                  Contato e Atendimento
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Customer & Access */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
+              Área do Cliente
+            </h3>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => openBookingModal()}
+                  className="hover:text-brand-300 transition-colors text-left"
+                >
+                  Solicitar Agendamento Online
+                </button>
+              </li>
+              <li>
+                <Link to="/entrar?modo=login" className="hover:text-brand-300 transition-colors">
+                  Entrar na minha conta
+                </Link>
+              </li>
+              <li>
+                <Link to="/entrar?modo=cadastro" className="hover:text-brand-300 transition-colors">
+                  Criar conta gratuita
+                </Link>
+              </li>
+              <li>
+                <Link to="/minha-conta" className="hover:text-brand-300 transition-colors">
+                  Acompanhar solicitações
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/entrar?modo=admin"
+                  className="inline-flex items-center gap-1.5 text-slate-400 hover:text-brand-300 transition-colors pt-1"
+                >
+                  <ShieldCheck className="w-4 h-4 text-brand-400" />
+                  Acesso administrativo (Celina)
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Contact Info */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
+              Canais de Atendimento
+            </h3>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-2.5">
+                <Phone className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-xs text-slate-400">WhatsApp e Telefone</span>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-white hover:text-brand-300 transition-colors"
+                  >
+                    {settings.phone_display || '(64) 9 9206-5866'}
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Instagram className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="block text-xs text-slate-400">Instagram Oficial</span>
+                  <a
+                    href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-white hover:text-brand-300 transition-colors"
+                  >
+                    {settings.instagram_handle || '@celinasousaturismo'}
+                  </a>
+                </div>
+              </li>
+              {settings.email_contact && (
+                <li className="flex items-start gap-2.5">
+                  <Mail className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-xs text-slate-400">E-mail</span>
+                    <a
+                      href={`mailto:${settings.email_contact}`}
+                      className="font-semibold text-white hover:text-brand-300 transition-colors break-all"
+                    >
+                      {settings.email_contact}
+                    </a>
+                  </div>
+                </li>
+              )}
+              {settings.address_info && (
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-xs text-slate-400">Localização</span>
+                    <span className="text-slate-200">{settings.address_info}</span>
+                  </div>
+                </li>
+              )}
+              {settings.business_hours && (
+                <li className="flex items-start gap-2.5">
+                  <Clock className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-xs text-slate-400">Horário de Atendimento</span>
+                    <span className="text-slate-200">{settings.business_hours}</span>
+                  </div>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+
+        {/* LGPD & Copyright */}
+        <div className="mt-10 pt-6 border-t border-slate-800/80 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 text-xs text-slate-400">
+          <p className="max-w-3xl leading-relaxed">
+            <strong className="text-slate-300">Privacidade e LGPD:</strong>{' '}
+            {settings.lgpd_notice ||
+              'Seus dados pessoais são coletados exclusivamente para processamento de solicitações de agendamento e atendimento pela Celina Sousa Turismo.'}
+          </p>
+          <p className="shrink-0 text-slate-400">
+            © {new Date().getFullYear()} {settings.company_name || 'Celina Sousa Turismo'} • Todos os direitos reservados.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
