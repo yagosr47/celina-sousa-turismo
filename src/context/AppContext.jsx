@@ -105,7 +105,7 @@ export function AppProvider({ children }) {
       body: JSON.stringify({ identifier, password, loginMode }),
     });
     if (data.token) {
-      setStoredToken(data.token);
+      setStoredToken(data.token, loginMode === 'admin' ? 'admin' : 'customer');
     }
     setUser(data.user);
     await refreshNotifications();
@@ -118,7 +118,7 @@ export function AppProvider({ children }) {
       body: JSON.stringify(payload),
     });
     if (data.token) {
-      setStoredToken(data.token);
+      setStoredToken(data.token, 'customer');
     }
     setUser(data.user);
     await refreshNotifications();

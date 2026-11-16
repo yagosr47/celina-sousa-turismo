@@ -4,10 +4,13 @@
   "description": "Plataforma completa de turismo, clubes, locações e viagens para Celina Sousa Turismo (Caldas Locações)",
   "main": "server/index.js",
   "scripts": {
-    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\" \"npm:dev:admin\"",
     "dev:server": "node --no-warnings server/index.js",
-    "dev:client": "vite --host 0.0.0.0 --port 5173",
+    "dev:client": "VITE_APP_MODE=customer vite --host 0.0.0.0 --port 5173",
+    "dev:admin": "VITE_APP_MODE=admin vite --host 0.0.0.0 --port 5174",
     "build": "vite build",
+    "build:customer": "VITE_APP_MODE=customer vite build --outDir dist/customer",
+    "build:admin": "VITE_APP_MODE=admin vite build --outDir dist/admin",
     "start": "NODE_ENV=production node --no-warnings server/index.js"
   },
   "dependencies": {

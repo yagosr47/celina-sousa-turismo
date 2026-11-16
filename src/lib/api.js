@@ -1,19 +1,76 @@
-const TOKEN_STORAGE_KEY = 'cst_auth_token';
+export function isAdminPortalApp() {
+  if (import.meta.env.VITE_APP_MODE === 'admin') {
+    return true;
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname || '';
+    if (host.startsWith('admin.') || host.startsWith('5174-')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function getCustomerSiteUrl(path = '/') {
+  if (typeof window === 'undefined') return path;
+  const { protocol, hostname, port } = window.location;
+  // In Arena preview environment: https://5174-{sandboxId}.e2b.app -> https://5173-{sandboxId}.e2b.app
+  if (hostname.startsWith('5174-')) {
+    const customerHost = hostname.replace(/^5174-/, '5173-');
+    return `${protocol}//${customerHost}${path}`;
+  }
+  if (port === '5174') {
+    return `${protocol}//${hostname}:5173${path}`;
+  }
+  return path;
+}
+
+export function getAdminPortalUrl(path = '/') {
+  if (typeof window === 'undefined') return '/admin';
+  const { protocol, hostname, port } = window.location;
+  if (hostname.startsWith('5173-')) {
+    const adminHost = hostname.replace(/^5173-/, '5174-');
+    return `${protocol}//${adminHost}${path}`;
+  }
+  if (port === '5173') {
+    return `${protocol}//${hostname}:5174${path}`;
+  }
+  return '/admin';
+}
+
+function getTokenStorageKey() {
+  if (isAdminPortalApp()) {
+    return 'cst_admin_auth_token';
+  }
+  if (typeof window !== 'undefined') {
+    const p = window.location.pathname || '';
+    if (p.startsWith('/admin') || p.startsWith('/painel-celina')) {
+      return 'cst_admin_auth_token';
+    }
+  }
+  return 'cst_customer_auth_token';
+}
 
 export function getStoredToken() {
   try {
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    return localStorage.getItem(getTokenStorageKey());
   } catch {
     return null;
   }
 }
 
-export function setStoredToken(token) {
+export function setStoredToken(token, forceMode = null) {
   try {
+    const key =
+      forceMode === 'admin'
+        ? 'cst_admin_auth_token'
+        : forceMode === 'customer'
+          ? 'cst_customer_auth_token'
+          : getTokenStorageKey();
     if (token) {
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      localStorage.setItem(key, token);
     } else {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(key);
     }
   } catch {}
 }
@@ -68,7 +125,8 @@ export async function uploadImages(fileList) {
 export function buildWhatsAppUrl(phoneNumber, customMessage = '') {
   const cleanDigits = String(phoneNumber || '64992065866').replace(/\D/g, '');
   const fullPhone = cleanDigits.startsWith('55') ? cleanDigits : `55${cleanDigits}`;
-  const defaultMsg = 'Olá Celina! Vim pelo site da Celina Sousa Turismo e gostaria de mais informações.';
+  const defaultMsg =
+    'Olá Celina! Vim pelo site da Celina Sousa Turismo e gostaria de mais informações.';
   const text = encodeURIComponent(customMessage || defaultMsg);
   return `https://wa.me/${fullPhone}?text=${text}`;
 }

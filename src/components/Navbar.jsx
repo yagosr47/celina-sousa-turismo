@@ -102,6 +102,14 @@ export default function Navbar() {
             >
               Instagram: {settings.instagram_handle || '@celinasousaturismo'}
             </a>
+            <span className="text-white/30">|</span>
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1 text-brand-200 hover:text-white font-bold transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-brand-300" />
+              <span>Portal ADM (Celina)</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -262,21 +270,6 @@ export default function Navbar() {
                       <p className="text-xs text-slate-500">Cadastre-se gratuitamente para agendar</p>
                     </div>
                   </Link>
-
-                  <div className="my-1 border-t border-slate-100" />
-
-                  <Link
-                    to="/entrar?modo=admin"
-                    className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors group"
-                  >
-                    <div className="p-2 rounded-lg bg-slate-200 text-slate-700 group-hover:bg-slate-800 group-hover:text-white transition-colors">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">Acesso administrativo</p>
-                      <p className="text-xs text-slate-500">Painel exclusivo Celina Sousa Turismo</p>
-                    </div>
-                  </Link>
                 </div>
               )}
             </div>
@@ -362,7 +355,7 @@ export default function Navbar() {
             </button>
 
             {!user && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                 <Link
                   to="/entrar?modo=login"
                   className="py-2.5 px-3 rounded-xl border border-brand-200 bg-brand-50 text-brand-800 font-semibold text-xs flex items-center justify-center gap-1.5"
@@ -376,13 +369,6 @@ export default function Navbar() {
                 >
                   <UserPlus className="w-4 h-4" />
                   Criar uma conta
-                </Link>
-                <Link
-                  to="/entrar?modo=admin"
-                  className="py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  Acesso administrativo
                 </Link>
               </div>
             )}

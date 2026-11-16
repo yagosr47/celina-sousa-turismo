@@ -16,8 +16,9 @@ import {
   X,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { apiFetch, formatDateTimeBR } from '../lib/api';
+import { apiFetch, formatDateTimeBR, getCustomerSiteUrl, isAdminPortalApp } from '../lib/api';
 import BrandLogo from '../components/BrandLogo';
+import AdminLoginPage from './AdminLoginPage';
 import AdminFirstAccessModal from './admin/AdminFirstAccessModal';
 import AdminDashboardTab from './admin/AdminDashboardTab';
 import AdminClubsTab from './admin/AdminClubsTab';
@@ -84,29 +85,9 @@ export default function AdminPanelPage() {
     );
   }
 
-  // Security check: If not logged in, redirect to admin login
+  // Security check: If not logged in, render the dedicated Admin Login Portal
   if (!user) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center p-6 bg-slate-100">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xl">
-          <div className="w-14 h-14 rounded-2xl bg-slate-900 text-brand-400 flex items-center justify-center mx-auto">
-            <ShieldAlert className="w-7 h-7" />
-          </div>
-          <h1 className="text-xl font-extrabold text-slate-900">
-            Acesso Restrito à Administração
-          </h1>
-          <p className="text-sm text-slate-600">
-            Faça login com sua conta administrativa da Celina Sousa Turismo para acessar este painel.
-          </p>
-          <Link
-            to="/entrar?modo=admin"
-            className="inline-flex items-center justify-center w-full py-3 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold"
-          >
-            Ir para Login Administrativo
-          </Link>
-        </div>
-      </div>
-    );
+    return <AdminLoginPage isStandalonePortal={isAdminPortalApp()} />;
   }
 
   // Security check: Customer accounts are strictly blocked from accessing Admin Panel
@@ -189,14 +170,25 @@ export default function AdminPanelPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-brand-400" />
-              <span className="hidden sm:inline">Ver Site Público</span>
-              <span className="sm:hidden">Site</span>
-            </Link>
+            {isAdminPortalApp() ? (
+              <a
+                href={getCustomerSiteUrl('/')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-brand-400" />
+                <span className="hidden sm:inline">Ir para Site de Clientes</span>
+                <span className="sm:hidden">Site</span>
+              </a>
+            ) : (
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-brand-400" />
+                <span className="hidden sm:inline">Ir para Site de Clientes</span>
+                <span className="sm:hidden">Site</span>
+              </Link>
+            )}
 
             <button
               type="button"
@@ -216,7 +208,7 @@ export default function AdminPanelPage() {
               type="button"
               onClick={async () => {
                 await logout();
-                navigate('/');
+                navigate(isAdminPortalApp() ? '/' : '/admin');
               }}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-200 hover:text-white text-xs font-bold border border-rose-500/30 transition-colors"
             >

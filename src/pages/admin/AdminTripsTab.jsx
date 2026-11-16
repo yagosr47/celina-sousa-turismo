@@ -13,7 +13,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { apiFetch, uploadImages, formatDateBR } from '../../lib/api';
+import { apiFetch, uploadImages, formatDateBR, getCustomerSiteUrl } from '../../lib/api';
 import { useApp } from '../../context/AppContext';
 
 const EMPTY_TRIP_FORM = {
@@ -762,13 +762,15 @@ export default function AdminTripsTab({ onDataChanged }) {
                   )}
                 </button>
                 {trip.is_published && (
-                  <Link
-                    to={`/viagens/${trip.slug}`}
+                  <a
+                    href={getCustomerSiteUrl(`/viagens/${trip.slug}`)}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    title="Visualizar página pública da viagem no Site de Clientes"
                     className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:text-brand-700"
                   >
                     <ExternalLink className="w-4 h-4" />
-                  </Link>
+                  </a>
                 )}
                 <button
                   type="button"

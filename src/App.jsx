@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import { isAdminPortalApp } from './lib/api';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
@@ -17,6 +18,7 @@ import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import CustomerAreaPage from './pages/CustomerAreaPage';
+import AdminLoginPage from './pages/AdminLoginPage';
 import AdminPanelPage from './pages/AdminPanelPage';
 
 function ScrollToTop() {
@@ -29,7 +31,26 @@ function ScrollToTop() {
 
 function AppShell() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/painel-celina');
+  const isStandaloneAdmin = isAdminPortalApp();
+  const isAdminRoute =
+    isStandaloneAdmin ||
+    location.pathname.startsWith('/painel-celina') ||
+    location.pathname.startsWith('/admin');
+
+  // If running as the Dedicated Admin Site (Port 5174 / VITE_APP_MODE=admin / admin.* subdomain),
+  // render exclusively the Admin Login & Admin Panel!
+  if (isStandaloneAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800">
+        <ScrollToTop />
+        <ToastBanner />
+        <Routes>
+          <Route path="/login" element={<AdminLoginPage isStandalonePortal />} />
+          <Route path="*" element={<AdminPanelPage />} />
+        </Routes>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
@@ -51,6 +72,7 @@ function AppShell() {
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/entrar" element={<AuthPage />} />
           <Route path="/minha-conta" element={<CustomerAreaPage />} />
+          <Route path="/admin" element={<AdminLoginPage />} />
           <Route path="/painel-celina" element={<AdminPanelPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
