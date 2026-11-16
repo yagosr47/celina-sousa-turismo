@@ -1,3 +1,7 @@
+const TOKEN_KEY = 'cst_auth_token';
+const SAVED_USER_KEY = 'cst_saved_user';
+const REMEMBER_DEVICE_KEY = 'cst_remember_device';
+
 export function isAdminPortalApp() {
   if (import.meta.env.VITE_APP_MODE === 'admin') {
     return true;
@@ -14,7 +18,6 @@ export function isAdminPortalApp() {
 export function getCustomerSiteUrl(path = '/') {
   if (typeof window === 'undefined') return path;
   const { protocol, hostname, port } = window.location;
-  // In Arena preview environment: https://5174-{sandboxId}.e2b.app -> https://5173-{sandboxId}.e2b.app
   if (hostname.startsWith('5174-')) {
     const customerHost = hostname.replace(/^5174-/, '5173-');
     return `${protocol}//${customerHost}${path}`;
@@ -25,52 +28,88 @@ export function getCustomerSiteUrl(path = '/') {
   return path;
 }
 
-export function getAdminPortalUrl(path = '/') {
-  if (typeof window === 'undefined') return '/admin';
-  const { protocol, hostname, port } = window.location;
-  if (hostname.startsWith('5173-')) {
-    const adminHost = hostname.replace(/^5173-/, '5174-');
-    return `${protocol}//${adminHost}${path}`;
-  }
-  if (port === '5173') {
-    return `${protocol}//${hostname}:5174${path}`;
-  }
-  return '/admin';
+export function getAdminPortalUrl(path = '/painel-celina') {
+  return path;
 }
 
-function getTokenStorageKey() {
-  if (isAdminPortalApp()) {
-    return 'cst_admin_auth_token';
+export function getRememberDevicePreference() {
+  try {
+    const val = localStorage.getItem(REMEMBER_DEVICE_KEY);
+    if (val === null) return true;
+    return val === 'true';
+  } catch {
+    return true;
   }
-  if (typeof window !== 'undefined') {
-    const p = window.location.pathname || '';
-    if (p.startsWith('/admin') || p.startsWith('/painel-celina')) {
-      return 'cst_admin_auth_token';
-    }
-  }
-  return 'cst_customer_auth_token';
+}
+
+export function setRememberDevicePreference(remember = true) {
+  try {
+    localStorage.setItem(REMEMBER_DEVICE_KEY, remember ? 'true' : 'false');
+  } catch {}
 }
 
 export function getStoredToken() {
   try {
-    return localStorage.getItem(getTokenStorageKey());
+    return (
+      localStorage.getItem(TOKEN_KEY) ||
+      sessionStorage.getItem(TOKEN_KEY) ||
+      localStorage.getItem('cst_admin_auth_token') ||
+      localStorage.getItem('cst_customer_auth_token') ||
+      null
+    );
   } catch {
     return null;
   }
 }
 
-export function setStoredToken(token, forceMode = null) {
+export function setStoredToken(token, rememberDevice = true) {
   try {
-    const key =
-      forceMode === 'admin'
-        ? 'cst_admin_auth_token'
-        : forceMode === 'customer'
-          ? 'cst_customer_auth_token'
-          : getTokenStorageKey();
     if (token) {
-      localStorage.setItem(key, token);
+      if (rememberDevice) {
+        localStorage.setItem(TOKEN_KEY, token);
+        sessionStorage.setItem(TOKEN_KEY, token);
+      } else {
+        sessionStorage.setItem(TOKEN_KEY, token);
+        localStorage.removeItem(TOKEN_KEY);
+      }
+      localStorage.setItem('cst_admin_auth_token', token);
+      localStorage.setItem('cst_customer_auth_token', token);
     } else {
-      localStorage.removeItem(key);
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem('cst_admin_auth_token');
+      localStorage.removeItem('cst_customer_auth_token');
+      localStorage.removeItem(SAVED_USER_KEY);
+      sessionStorage.removeItem(SAVED_USER_KEY);
+    }
+  } catch {}
+}
+
+export function getSavedUser() {
+  try {
+    const raw =
+      localStorage.getItem(SAVED_USER_KEY) || sessionStorage.getItem(SAVED_USER_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+export function setSavedUser(user, rememberDevice = true) {
+  try {
+    if (user) {
+      const serialized = JSON.stringify(user);
+      if (rememberDevice) {
+        localStorage.setItem(SAVED_USER_KEY, serialized);
+        sessionStorage.setItem(SAVED_USER_KEY, serialized);
+      } else {
+        sessionStorage.setItem(SAVED_USER_KEY, serialized);
+        localStorage.removeItem(SAVED_USER_KEY);
+      }
+    } else {
+      localStorage.removeItem(SAVED_USER_KEY);
+      sessionStorage.removeItem(SAVED_USER_KEY);
     }
   } catch {}
 }
@@ -159,3 +198,16 @@ export function formatDateTimeBR(dateStr) {
     return dateStr;
   }
 }
+
+export function formatCurrencyBR(value) {
+  if (value === null || value === undefined || value === '' || Number(value) <= 0) {
+    return null;
+  }
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(Number(value));
+}
+
+export const formatPriceBR = formatCurrencyBR;
+

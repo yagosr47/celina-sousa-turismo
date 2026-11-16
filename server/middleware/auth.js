@@ -3,26 +3,34 @@ const config = require('../config');
 const { db } = require('../db');
 
 const COOKIE_NAME = 'cst_auth_token';
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function signUserToken(user) {
+function signUserToken(user, rememberDevice = true) {
   return jwt.sign(
     {
       id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
       role: user.role,
     },
     config.jwtSecret,
-    { expiresIn: '7d' }
+    { expiresIn: rememberDevice ? '30d' : '24h' }
   );
 }
 
-function setAuthCookie(res, token) {
-  res.cookie(COOKIE_NAME, token, {
+function setAuthCookie(res, token, rememberDevice = true) {
+  const options = {
     httpOnly: true,
     sameSite: 'lax',
     secure: config.nodeEnv === 'production',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
     path: '/',
-  });
+  };
+  if (rememberDevice) {
+    options.maxAge = THIRTY_DAYS_MS;
+  }
+  res.cookie(COOKIE_NAME, token, options);
 }
 
 function clearAuthCookie(res) {
@@ -62,12 +70,37 @@ function getAuthenticatedUser(req) {
   if (!token) return null;
   try {
     const decoded = jwt.verify(token, config.jwtSecret);
-    const user = db.prepare(`
+    let user = db.prepare(`
       SELECT id, name, username, email, phone, role, must_change_password, is_active, lgpd_consent, created_at, updated_at
       FROM users WHERE id = ?
     `).get(decoded.id);
-    if (!user || !user.is_active) return null;
-    return sanitizeUser(user);
+
+    if (!user && decoded.role === 'admin') {
+      user = db.prepare(`
+        SELECT id, name, username, email, phone, role, must_change_password, is_active, lgpd_consent, created_at, updated_at
+        FROM users WHERE role = 'admin' ORDER BY id ASC LIMIT 1
+      `).get();
+    }
+
+    if (user) {
+      if (!user.is_active) return null;
+      return sanitizeUser(user);
+    }
+
+    if (decoded.id && decoded.role) {
+      return {
+        id: decoded.id,
+        name: decoded.name || 'Cliente',
+        username: decoded.username || null,
+        email: decoded.email || null,
+        phone: decoded.phone || null,
+        role: decoded.role,
+        must_change_password: false,
+        is_active: true,
+        lgpd_consent: true,
+      };
+    }
+    return null;
   } catch {
     return null;
   }

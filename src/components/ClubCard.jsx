@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ArrowRight, Sparkles, CalendarPlus, CheckCircle2 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { MapPin, ArrowRight, Sparkles, CheckCircle2, Info } from 'lucide-react';
 
 export default function ClubCard({ club }) {
-  const { openBookingModal } = useApp();
-
   const coverUrl =
     club.cover_image ||
     (club.images && club.images[0] && club.images[0].image_url) ||
@@ -22,14 +19,14 @@ export default function ClubCard({ club }) {
   return (
     <article className="group bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
       {/* Cover Image */}
-      <div className="relative h-56 overflow-hidden bg-slate-100">
+      <Link to={`/clubes/${club.slug}`} className="relative h-56 overflow-hidden bg-slate-100 block">
         <img
           src={coverUrl}
           alt={club.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
 
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 backdrop-blur-sm text-slate-800 text-xs font-bold shadow">
@@ -49,7 +46,7 @@ export default function ClubCard({ club }) {
             {club.price_info}
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -79,28 +76,15 @@ export default function ClubCard({ club }) {
           )}
         </div>
 
-        <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+        <div className="pt-3 border-t border-slate-100">
           <Link
             to={`/clubes/${club.slug}`}
-            className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-sm transition-all"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-blue-700 hover:from-brand-500 hover:to-blue-600 text-white text-sm font-extrabold shadow-sm transition-all"
           >
-            <span>Ver detalhes</span>
+            <Info className="w-4 h-4" />
+            <span>Saber mais sobre este clube</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <button
-            type="button"
-            onClick={() =>
-              openBookingModal({
-                itemType: 'club',
-                itemId: club.id,
-                itemName: club.name,
-              })
-            }
-            title="Solicitar agendamento neste clube"
-            className="p-2.5 rounded-xl border border-brand-200 bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors"
-          >
-            <CalendarPlus className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </article>

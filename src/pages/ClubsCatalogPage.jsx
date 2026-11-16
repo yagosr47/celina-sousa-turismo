@@ -1,19 +1,18 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Search,
-  MapPin,
   Building2,
-  CalendarPlus,
-  MessageCircle,
   Filter,
+  ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { buildWhatsAppUrl } from '../lib/api';
 import ClubCard from '../components/ClubCard';
 
 export default function ClubsCatalogPage() {
-  const { siteData, loadingSite, openBookingModal } = useApp();
-  const { clubs = [], settings = {} } = siteData;
+  const { siteData, loadingSite, user } = useApp();
+  const { clubs = [] } = siteData;
 
   const [search, setSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('Todas');
@@ -40,27 +39,35 @@ export default function ClubsCatalogPage() {
     });
   }, [clubs, search, selectedCity]);
 
-  const whatsappUrl = buildWhatsAppUrl(
-    settings.whatsapp_number,
-    'Olá Celina! Gostaria de consultar informações sobre clubes e destinos disponíveis.'
-  );
-
   return (
     <div className="pb-20 space-y-12">
       {/* Header Banner */}
-      <section className="bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white py-14 sm:py-16 border-b border-slate-800">
+      <section className="bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white py-12 sm:py-16 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="max-w-3xl space-y-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold uppercase tracking-wider border border-brand-400/30">
-              Catálogo Celina Sousa Turismo
-            </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Clubes, Hotéis e Destinos
-            </h1>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Explore os estabelecimentos divulgados pela Celina Sousa Turismo — Caldas Locações.
-              Clique em qualquer clube para acessar fotos ampliadas, estrutura completa e solicitar seu agendamento.
-            </p>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+            <div className="max-w-3xl space-y-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold uppercase tracking-wider border border-brand-400/30">
+                Catálogo Celina Sousa Turismo
+              </span>
+              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+                Clubes, Parques e Destinos
+              </h1>
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                Conheça todos os clubes e opções de lazer divulgados pela Celina Sousa Turismo —
+                Caldas Locações. Clique em qualquer clube para saber mais detalhes, ver fotos da
+                estrutura, piscinas e informações completas.
+              </p>
+            </div>
+
+            {user?.role === 'admin' && (
+              <Link
+                to="/painel-celina?tab=clubes"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shrink-0"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Gerenciar / Adicionar Clubes (ADM)</span>
+              </Link>
+            )}
           </div>
 
           {/* Search & City Filter */}
@@ -115,17 +122,17 @@ export default function ClubsCatalogPage() {
             <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
                 {clubs.length === 0
-                  ? 'Clubes e Destinos sob Consulta'
+                  ? 'Área de Clubes e Destinos'
                   : 'Nenhum clube encontrado para esta busca'}
               </h2>
               <p className="text-sm text-slate-600 leading-relaxed">
                 {clubs.length === 0
-                  ? 'A Celina pode cadastrar e publicar clubes a qualquer momento pelo Painel Administrativo. Você também pode solicitar informações ou agendamento de um destino diretamente abaixo.'
-                  : 'Tente limpar o filtro de busca ou fale com a Celina para consultar outros clubes e locações.'}
+                  ? 'Os clubes, fotos e informações detalhadas são adicionados e atualizados pela administração da Celina Sousa Turismo.'
+                  : 'Tente limpar o filtro de busca para visualizar todos os clubes disponíveis.'}
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              {search || selectedCity !== 'Todas' ? (
+              {(search || selectedCity !== 'Todas') && (
                 <button
                   type="button"
                   onClick={() => {
@@ -136,31 +143,32 @@ export default function ClubsCatalogPage() {
                 >
                   Limpar Filtros
                 </button>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => openBookingModal({ itemType: 'destination' })}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Solicitar Agendamento
-              </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Falar pelo WhatsApp
-              </a>
+              )}
+              {user?.role === 'admin' ? (
+                <Link
+                  to="/painel-celina?tab=clubes"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Cadastrar Clube no Painel ADM</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/contato"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
+                >
+                  <span>Entrar em Contato para Informações</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs sm:text-sm text-slate-600">
               <span>
-                Exibindo <strong>{filteredClubs.length}</strong> clube(s) / destino(s)
+                Exibindo <strong>{filteredClubs.length}</strong> clube(s) disponível(is) para
+                consulta
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">

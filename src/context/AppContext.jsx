@@ -1,11 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { apiFetch, setStoredToken, getStoredToken } from '../lib/api';
+import {
+  apiFetch,
+  setStoredToken,
+  getStoredToken,
+  getSavedUser,
+  setSavedUser,
+  getRememberDevicePreference,
+  setRememberDevicePreference,
+} from '../lib/api';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUserState] = useState(() => getSavedUser());
+  const [authLoading, setAuthLoading] = useState(() => !getSavedUser());
   const [siteData, setSiteData] = useState({
     settings: {
       company_name: 'Celina Sousa Turismo',
@@ -27,15 +35,12 @@ export function AppProvider({ children }) {
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
   const [toast, setToast] = useState(null);
-  const [bookingModal, setBookingModal] = useState({
-    isOpen: false,
-    itemType: 'club',
-    itemId: null,
-    itemName: '',
-    defaultDate: '',
-  });
+
+  const setUser = useCallback((nextUser) => {
+    setUserState(nextUser);
+    setSavedUser(nextUser, getRememberDevicePreference());
+  }, []);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ id: Date.now(), message, type });
@@ -81,14 +86,18 @@ export function AppProvider({ children }) {
   const refreshAuth = useCallback(async () => {
     try {
       const data = await apiFetch('/api/auth/me');
-      setUser(data.user);
+      setUserState(data.user);
+      setSavedUser(data.user, getRememberDevicePreference());
       setUnreadCount(data.unreadNotifications || 0);
       await refreshNotifications();
-    } catch {
-      setUser(null);
-      setStoredToken(null);
-      setNotifications([]);
-      setUnreadCount(0);
+    } catch (err) {
+      if (err?.status === 401 || err?.status === 403 || !getStoredToken()) {
+        setUserState(null);
+        setStoredToken(null);
+        setSavedUser(null);
+        setNotifications([]);
+        setUnreadCount(0);
+      }
     } finally {
       setAuthLoading(false);
     }
@@ -99,28 +108,39 @@ export function AppProvider({ children }) {
     refreshAuth();
   }, [refreshSiteData, refreshAuth]);
 
-  const login = async ({ identifier, password, loginMode }) => {
+  const login = async ({ identifier, password, loginMode, rememberDevice = true }) => {
+    const shouldRemember = rememberDevice !== false;
+    setRememberDevicePreference(shouldRemember);
+
     const data = await apiFetch('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ identifier, password, loginMode }),
+      body: JSON.stringify({
+        identifier,
+        password,
+        loginMode,
+        rememberDevice: shouldRemember,
+      }),
     });
     if (data.token) {
-      setStoredToken(data.token, loginMode === 'admin' ? 'admin' : 'customer');
+      setStoredToken(data.token, shouldRemember);
     }
-    setUser(data.user);
+    setUserState(data.user);
+    setSavedUser(data.user, shouldRemember);
     await refreshNotifications();
     return data;
   };
 
   const register = async (payload) => {
+    setRememberDevicePreference(true);
     const data = await apiFetch('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
     if (data.token) {
-      setStoredToken(data.token, 'customer');
+      setStoredToken(data.token, true);
     }
-    setUser(data.user);
+    setUserState(data.user);
+    setSavedUser(data.user, true);
     await refreshNotifications();
     return data;
   };
@@ -130,7 +150,8 @@ export function AppProvider({ children }) {
       await apiFetch('/api/auth/logout', { method: 'POST' });
     } catch {}
     setStoredToken(null);
-    setUser(null);
+    setSavedUser(null);
+    setUserState(null);
     setNotifications([]);
     setUnreadCount(0);
     showToast('Sessão encerrada com sucesso.', 'info');
@@ -154,25 +175,6 @@ export function AppProvider({ children }) {
     } catch {}
   };
 
-  const openBookingModal = ({
-    itemType = 'club',
-    itemId = null,
-    itemName = '',
-    defaultDate = '',
-  } = {}) => {
-    setBookingModal({
-      isOpen: true,
-      itemType,
-      itemId,
-      itemName,
-      defaultDate,
-    });
-  };
-
-  const closeBookingModal = () => {
-    setBookingModal((prev) => ({ ...prev, isOpen: false }));
-  };
-
   return (
     <AppContext.Provider
       value={{
@@ -194,9 +196,6 @@ export function AppProvider({ children }) {
         toast,
         setToast,
         showToast,
-        bookingModal,
-        openBookingModal,
-        closeBookingModal,
       }}
     >
       {children}

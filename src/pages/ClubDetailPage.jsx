@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   MapPin,
-  CalendarPlus,
-  MessageCircle,
   Share2,
   ArrowLeft,
   Maximize2,
@@ -18,35 +16,24 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  Clock,
   AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { apiFetch, buildWhatsAppUrl, formatDateBR } from '../lib/api';
+import { apiFetch } from '../lib/api';
 import ImageLightbox from '../components/ImageLightbox';
-import TripCard from '../components/TripCard';
 
 export default function ClubDetailPage() {
   const { slug } = useParams();
-  const { siteData, openBookingModal, showToast } = useApp();
-  const settings = siteData.settings || {};
+  const { user, showToast } = useApp();
 
   const [club, setClub] = useState(null);
-  const [relatedTrips, setRelatedTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [lightboxIdx, setLightboxIdx] = useState(null);
-
-  // Quick availability checker state
-  const [checkDate, setCheckDate] = useState(
-    new Date(Date.now() + 86400000).toISOString().slice(0, 10)
-  );
-  const [checkPeople, setCheckPeople] = useState(2);
-  const [availResult, setAvailResult] = useState(null);
-  const [checkingAvail, setCheckingAvail] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -56,7 +43,6 @@ export default function ClubDetailPage() {
       .then((data) => {
         if (!active) return;
         setClub(data.club);
-        setRelatedTrips(data.relatedTrips || []);
         setActiveImageIdx(0);
         setSelectedCategory('Todas');
       })
@@ -72,21 +58,6 @@ export default function ClubDetailPage() {
     };
   }, [slug]);
 
-  const handleQuickCheck = async () => {
-    if (!club || !checkDate) return;
-    try {
-      setCheckingAvail(true);
-      const res = await apiFetch(
-        `/api/public/check-availability?itemType=club&itemId=${club.id}&desiredDate=${encodeURIComponent(checkDate)}&peopleCount=${encodeURIComponent(checkPeople)}`
-      );
-      setAvailResult(res);
-    } catch (err) {
-      showToast(err.message || 'Erro ao consultar disponibilidade.', 'error');
-    } finally {
-      setCheckingAvail(false);
-    }
-  };
-
   const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareTitle = `${club?.name} — Celina Sousa Turismo`;
@@ -94,7 +65,7 @@ export default function ClubDetailPage() {
       try {
         await navigator.share({
           title: shareTitle,
-          text: `Confira ${club?.name} na Celina Sousa Turismo!`,
+          text: `Confira todos os detalhes de ${club?.name} na Celina Sousa Turismo!`,
           url: shareUrl,
         });
         return;
@@ -162,11 +133,6 @@ export default function ClubDetailPage() {
   const safeActiveIdx = activeImageIdx < filteredImages.length ? activeImageIdx : 0;
   const currentMainImage = filteredImages[safeActiveIdx] || filteredImages[0];
 
-  const whatsappClubUrl = buildWhatsAppUrl(
-    settings.whatsapp_number,
-    `Olá Celina! Estou vendo a página do clube *${club.name}* (${club.city}/${club.state}) no site da Celina Sousa Turismo e gostaria de consultar informações e disponibilidade.`
-  );
-
   const detailBlocks = [
     {
       title: 'Características do Clube',
@@ -221,7 +187,7 @@ export default function ClubDetailPage() {
   ].filter((block) => block.content && String(block.content).trim() !== '');
 
   return (
-    <div className="pb-20 space-y-12">
+    <div className="pb-20 space-y-10 sm:space-y-12">
       {/* Top Breadcrumb & Header */}
       <section className="bg-white border-b border-slate-200 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
@@ -231,67 +197,50 @@ export default function ClubDetailPage() {
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-brand-700"
             >
               <ArrowLeft className="w-4 h-4" />
-              Voltar para Clubes e Destinos
+              Voltar para Todos os Clubes
             </Link>
 
-            <button
-              type="button"
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors"
-            >
-              <Share2 className="w-4 h-4 text-brand-600" />
-              Compartilhar clube
-            </button>
-          </div>
-
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {club.city} — {club.state}
-                </span>
-                {club.address_location && (
-                  <span className="text-xs text-slate-500 font-medium">
-                    • {club.address_location}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900">
-                {club.name}
-              </h1>
-              {club.short_description && (
-                <p className="text-slate-600 text-sm sm:text-base max-w-3xl">
-                  {club.short_description}
-                </p>
+            <div className="flex items-center gap-2">
+              {user?.role === 'admin' && (
+                <Link
+                  to="/painel-celina?tab=clubes"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4 text-brand-400" />
+                  <span>Editar no Painel ADM</span>
+                </Link>
               )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <button
                 type="button"
-                onClick={() =>
-                  openBookingModal({
-                    itemType: 'club',
-                    itemId: club.id,
-                    itemName: club.name,
-                  })
-                }
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md transition-all"
+                onClick={handleShare}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors"
               >
-                <CalendarPlus className="w-4 h-4" />
-                Solicitar agendamento
+                <Share2 className="w-4 h-4 text-brand-600" />
+                Compartilhar clube
               </button>
-              <a
-                href={whatsappClubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-md transition-all"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Falar pelo WhatsApp
-              </a>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold">
+                <MapPin className="w-3.5 h-3.5" />
+                {club.city} — {club.state}
+              </span>
+              {club.address_location && (
+                <span className="text-xs text-slate-500 font-medium">
+                  • {club.address_location}
+                </span>
+              )}
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900">
+              {club.name}
+            </h1>
+            {club.short_description && (
+              <p className="text-slate-600 text-sm sm:text-base max-w-3xl">
+                {club.short_description}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -303,9 +252,9 @@ export default function ClubDetailPage() {
           <div className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-extrabold text-slate-900">Galeria de Fotos</h2>
+                <h2 className="text-lg font-extrabold text-slate-900">Galeria de Fotos do Clube</h2>
                 <p className="text-xs text-slate-500">
-                  {filteredImages.length} foto(s) disponível(is) • Clique na imagem para ampliar
+                  {filteredImages.length} foto(s) • Clique na imagem para ampliar em tela cheia
                 </p>
               </div>
               {categories.length > 2 && (
@@ -411,17 +360,17 @@ export default function ClubDetailPage() {
           {/* DESCRIÇÃO COMPLETA */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-              Sobre {club.name}
+              Saber Mais Sobre {club.name}
             </h2>
             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-sm sm:text-base">
               {club.full_description ||
                 club.short_description ||
-                'Entre em contato com a Celina Sousa Turismo para mais informações detalhadas sobre este estabelecimento.'}
+                'Confira abaixo todas as informações detalhadas cadastradas sobre este clube.'}
             </p>
             {club.summary_info && (
               <div className="pt-3 border-t border-slate-100">
                 <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Destaques Resumidos
+                  Principais Atrações e Destaques
                 </span>
                 <p className="text-sm font-semibold text-brand-800 bg-brand-50 border border-brand-100 rounded-2xl p-4">
                   {club.summary_info}
@@ -456,16 +405,15 @@ export default function ClubDetailPage() {
           )}
         </div>
 
-        {/* RIGHT COLUMN: Commercial Information + Availability Checker + Actions */}
+        {/* RIGHT COLUMN: Ficha de Informações do Clube */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Commercial Card */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-md space-y-5 sticky top-24">
             <div className="border-b border-slate-100 pb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-brand-600">
-                Informações Comerciais
+                Ficha Informativa do Clube
               </span>
               <h3 className="text-2xl font-extrabold text-slate-900 mt-1">
-                {club.price_info || 'Valores sob consulta'}
+                {club.price_info || 'Informações sob consulta'}
               </h3>
               {club.payment_conditions && (
                 <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
@@ -475,28 +423,45 @@ export default function ClubDetailPage() {
               )}
             </div>
 
+            <div className="space-y-3 text-xs sm:text-sm text-slate-700">
+              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <MapPin className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-slate-900 block">Localidade</span>
+                  <span className="text-slate-600">
+                    {club.city} - {club.state}
+                    {club.address_location ? ` (${club.address_location})` : ''}
+                  </span>
+                </div>
+              </div>
+
+              {club.available_dates && (
+                <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <Calendar className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-slate-900 block">
+                      Funcionamento / Períodos
+                    </span>
+                    <span className="text-slate-600 whitespace-pre-line">
+                      {club.available_dates}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {club.promotions && (
               <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
                 <span className="font-bold uppercase tracking-wider block text-amber-700">
-                  Promoção / Condição Especial
+                  Condição Especial / Destaque
                 </span>
                 <p className="font-medium">{club.promotions}</p>
               </div>
             )}
 
-            {club.available_dates && (
-              <div className="space-y-1 text-xs text-slate-700">
-                <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-brand-600" />
-                  Datas Disponíveis / Funcionamento:
-                </span>
-                <p className="pl-5 text-slate-600 whitespace-pre-line">{club.available_dates}</p>
-              </div>
-            )}
-
             {club.related_packages && (
               <div className="space-y-1 text-xs text-slate-700">
-                <span className="font-bold text-slate-900 block">Pacotes Relacionados:</span>
+                <span className="font-bold text-slate-900 block">Opções Relacionadas:</span>
                 <p className="text-slate-600 whitespace-pre-line">{club.related_packages}</p>
               </div>
             )}
@@ -510,97 +475,14 @@ export default function ClubDetailPage() {
               </div>
             )}
 
-            {/* Quick Availability Consultation Widget */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
-                Consultar Disponibilidade Rápida
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-500 mb-1">Data</label>
-                  <input
-                    type="date"
-                    value={checkDate}
-                    onChange={(e) => {
-                      setCheckDate(e.target.value);
-                      setAvailResult(null);
-                    }}
-                    className="w-full rounded-xl border border-slate-300 px-2.5 py-2 text-xs font-medium bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                    Pessoas
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={checkPeople}
-                    onChange={(e) => {
-                      setCheckPeople(Math.max(1, parseInt(e.target.value || '1', 10)));
-                      setAvailResult(null);
-                    }}
-                    className="w-full rounded-xl border border-slate-300 px-2.5 py-2 text-xs font-medium bg-white"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleQuickCheck}
-                disabled={checkingAvail}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+            <div className="space-y-2.5 pt-2 border-t border-slate-100">
+              <Link
+                to="/contato"
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-blue-700 hover:from-brand-500 hover:to-blue-600 text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all"
               >
-                {checkingAvail ? 'Verificando...' : 'Consultar disponibilidade'}
-              </button>
-
-              {availResult && (
-                <div
-                  className={`p-3 rounded-xl text-xs border leading-relaxed ${
-                    !availResult.canRequest
-                      ? 'bg-rose-50 border-rose-200 text-rose-800'
-                      : availResult.hasConfirmedAvailability
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                        : 'bg-amber-50 border-amber-200 text-amber-900'
-                  }`}
-                >
-                  <p className="font-bold flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 shrink-0" />
-                    {formatDateBR(checkDate)} ({checkPeople} pessoa(s))
-                  </p>
-                  <p className="mt-1">{availResult.message}</p>
-                </div>
-              )}
-            </div>
-
-            {/* 4 Required Action Buttons */}
-            <div className="space-y-2.5 pt-1">
-              <button
-                type="button"
-                onClick={() =>
-                  openBookingModal({
-                    itemType: 'club',
-                    itemId: club.id,
-                    itemName: club.name,
-                    defaultDate: checkDate,
-                  })
-                }
-                className="w-full py-3.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-md transition-all"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Solicitar agendamento
-              </button>
-
-              <a
-                href={whatsappClubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Falar pelo WhatsApp
-              </a>
+                <Info className="w-4 h-4" />
+                <span>Tirar Dúvidas Sobre Este Clube</span>
+              </Link>
 
               <button
                 type="button"
@@ -608,26 +490,12 @@ export default function ClubDetailPage() {
                 className="w-full py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
               >
                 <Share2 className="w-4 h-4 text-brand-600" />
-                Compartilhar clube
+                Compartilhar informações do clube
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* RELATED TRIPS / PACKAGES */}
-      {relatedTrips.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-          <h2 className="text-2xl font-extrabold text-slate-900">
-            Viagens e Pacotes Relacionados
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedTrips.map((trip) => (
-              <TripCard key={trip.id} trip={trip} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {lightboxIdx !== null && (
         <ImageLightbox
