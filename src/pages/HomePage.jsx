@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   Plane,
   CalendarPlus,
-  MessageCircle,
-  Instagram,
   Sparkles,
   ArrowRight,
   Building2,
@@ -14,15 +12,14 @@ import {
   HelpCircle,
   ChevronDown,
   Image as ImageIcon,
-  PhoneCall,
   Maximize2,
+  Heart,
+  UserCheck,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { buildWhatsAppUrl } from '../lib/api';
 import ClubCard from '../components/ClubCard';
 import TripCard from '../components/TripCard';
 import ImageLightbox from '../components/ImageLightbox';
-import { ProfessionalEmblem } from '../components/BrandLogo';
 
 export default function HomePage() {
   const { siteData, loadingSite, openBookingModal } = useApp();
@@ -32,10 +29,11 @@ export default function HomePage() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [openFaqId, setOpenFaqId] = useState(null);
 
-  const whatsappUrl = buildWhatsAppUrl(
-    settings.whatsapp_number,
-    'Olá Celina! Vim pelo site da Celina Sousa Turismo e gostaria de solicitar informações sobre clubes, locações e viagens.'
-  );
+  const celinaPhotoUrl =
+    settings.about_image_url &&
+    settings.about_image_url !== '/assets/images/about-tourism.jpg'
+      ? settings.about_image_url
+      : '/assets/images/celina-sousa.jpeg';
 
   const galleryCategories = [
     'Todas',
@@ -92,19 +90,9 @@ export default function HomePage() {
                 <span>Solicitar Agendamento</span>
               </button>
 
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-emerald-600/25 transition-all hover:-translate-y-0.5 active:scale-[0.99]"
-              >
-                <MessageCircle className="w-5 h-5" />
-                <span>Atendimento no WhatsApp</span>
-              </a>
-
               <Link
                 to="/clubes"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 sm:py-4 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-sm sm:text-base border border-white/20 transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-sm sm:text-base border border-white/20 transition-all"
               >
                 <span>Ver Clubes e Destinos</span>
                 <ArrowRight className="w-4 h-4" />
@@ -179,94 +167,117 @@ export default function HomePage() {
             </div>
           </button>
 
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group bg-white hover:bg-emerald-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
+          <Link
+            to="/sobre"
+            className="group bg-white hover:bg-blue-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
           >
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="min-w-0">
               <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                WhatsApp Direto
+                Sobre a Celina
               </p>
-              <p className="text-[11px] text-emerald-700 font-semibold truncate">
-                {settings.phone_display || '(64) 9 9206-5866'}
-              </p>
+              <p className="text-[11px] text-slate-500 truncate">Nossa história e missão</p>
             </div>
-          </a>
+          </Link>
         </div>
       </section>
 
-      {/* 2. APRESENTAÇÃO DA CELINA SOUSA TURISMO */}
+      {/* 2. APRESENTAÇÃO PESSOAL DA CELINA SOUSA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-5 relative overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-brand-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl">
-            <div className="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-brand-500/20 blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-44 h-44 rounded-full bg-sky-400/15 blur-2xl pointer-events-none" />
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Foto da Celina com bordas em variação de Azul Claro, Médio e Escuro */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center">
+            <div className="relative w-full max-w-xs sm:max-w-sm mx-auto">
+              <div className="absolute -top-3 -left-3 w-28 h-28 rounded-full bg-sky-300/40 blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-3 -right-3 w-32 h-32 rounded-full bg-blue-900/35 blur-2xl pointer-events-none" />
 
-            <ProfessionalEmblem className="w-24 h-24 sm:w-28 sm:h-28 drop-shadow-xl" />
-
-            <div className="mt-4 text-center space-y-1">
-              <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-                {settings.company_name || 'Celina Sousa Turismo'}
-              </h3>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-300 text-xs font-extrabold uppercase tracking-widest">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                {settings.company_subtitle || 'Caldas Locações'}
-              </span>
-            </div>
-
-            <div className="mt-6 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition-colors shadow"
-              >
-                <PhoneCall className="w-3.5 h-3.5" />
-                <span>{settings.phone_display || '(64) 9 9206-5866'}</span>
-              </a>
-              <a
-                href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold transition-colors"
-              >
-                <Instagram className="w-3.5 h-3.5 text-brand-300" />
-                <span>{settings.instagram_handle || '@celinasousaturismo'}</span>
-              </a>
+              {/* Camada Externa: Azul Escuro -> Azul Médio -> Azul Claro */}
+              <div className="relative p-2 rounded-[2.1rem] bg-gradient-to-tr from-blue-950 via-blue-600 to-sky-300 shadow-2xl shadow-blue-900/20">
+                {/* Camada Intermediária: Azul Claro -> Azul Médio -> Azul Escuro */}
+                <div className="p-1.5 rounded-[1.75rem] bg-gradient-to-bl from-sky-300 via-sky-500 to-blue-900 border-2 border-sky-200/90">
+                  {/* Camada Interna: Azul Escuro */}
+                  <div className="relative rounded-[1.35rem] overflow-hidden border-[3px] border-blue-950 bg-slate-900 aspect-[4/5]">
+                    <img
+                      src={celinaPhotoUrl}
+                      alt="Celina Sousa — Celina Sousa Turismo"
+                      className="w-full h-full object-cover object-top"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-blue-950/95 via-blue-950/50 to-transparent p-4 text-white">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-400/25 border border-sky-300/40 text-sky-200 text-[10px] font-extrabold uppercase tracking-wider">
+                        <Heart className="w-3 h-3 text-sky-300 fill-sky-300" />
+                        Celina Sousa Turismo
+                      </span>
+                      <p className="text-base sm:text-lg font-extrabold mt-0.5">Celina Sousa</p>
+                      <p className="text-[11px] text-sky-200">Caldas Locações</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Texto de Apresentação Pessoal */}
           <div className="lg:col-span-7 space-y-4 sm:space-y-5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
-              Apresentação Institucional
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-blue-700 text-xs font-extrabold uppercase tracking-wider border border-sky-200">
+              Apresentação Pessoal
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900">
-              {settings.presentation_title || 'Bem-vindo à Celina Sousa Turismo'}
+              Olá, sou Celina Sousa!
             </h2>
-            <p className="text-slate-600 leading-relaxed text-sm sm:text-lg whitespace-pre-line">
-              {settings.presentation_text ||
-                'A Celina Sousa Turismo — Caldas Locações atua na divulgação e intermediação de locações, clubes, parques aquáticos, hotéis, destinos turísticos e viagens. Nosso objetivo é oferecer um atendimento transparente, organizado e direto para que você e sua família planejem seus momentos de lazer com tranquilidade.'}
-            </p>
+            <div className="space-y-3.5 text-slate-600 leading-relaxed text-sm sm:text-base">
+              <p>
+                Minha história com o turismo começou em 2020, em um momento de grandes mudanças na
+                minha vida. Após minha separação, assumi a responsabilidade de cuidar dos meus dois
+                filhos, que na época tinham 9 e 12 anos. Em busca de uma nova oportunidade de
+                renda, comecei a trabalhar com locações de hospedagens em Caldas Novas.
+              </p>
+              <p>
+                Pouco tempo depois, veio a pandemia, trazendo desafios e interrompendo nossas
+                atividades por aproximadamente um ano. Foi um período difícil, mas nunca pensei em
+                desistir.
+              </p>
+              <p>
+                Sempre fui apaixonada por lidar com pessoas. Sou comunicativa, carismática e
+                acredito que pequenos gestos podem transformar experiências. Gosto de ajudar,
+                acolher e, principalmente, de participar da realização de sonhos.
+              </p>
+              <p>
+                Foi assim que descobri no turismo muito mais do que uma profissão: encontrei uma
+                verdadeira paixão e um propósito que carrego com amor, dedicação e responsabilidade.
+              </p>
+              <p>
+                Hoje, através da{' '}
+                <strong className="font-extrabold text-blue-900">Celina Sousa Turismo</strong>, meu
+                objetivo é proporcionar muito mais do que hospedagens e viagens: quero ajudar
+                pessoas e famílias a viverem momentos especiais, criarem boas lembranças e
+                desfrutarem de experiências que ficarão para sempre na memória.
+              </p>
+            </div>
 
-            <div className="pt-2 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 border-l-4 border-blue-600">
+              <p className="text-sm sm:text-base font-extrabold text-blue-950">
+                Será um prazer fazer parte da sua próxima viagem!
+              </p>
+            </div>
+
+            <div className="pt-1 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
               <Link
                 to="/sobre"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all"
               >
-                <span>Conhecer Mais Sobre a Empresa</span>
+                <span>Ver Mais Sobre a Empresa</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                to="/contato"
+              <button
+                type="button"
+                onClick={() => openBookingModal()}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-brand-300 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-bold transition-all"
               >
-                <span>Solicitar Informações</span>
-              </Link>
+                <CalendarPlus className="w-4 h-4" />
+                <span>Solicitar Agendamento</span>
+              </button>
             </div>
           </div>
         </div>
@@ -381,15 +392,6 @@ export default function HomePage() {
                 <CalendarPlus className="w-4 h-4" />
                 Solicitar Consulta / Agendamento
               </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Consultar Clubes pelo WhatsApp
-              </a>
             </div>
           </div>
         ) : (
@@ -456,15 +458,6 @@ export default function HomePage() {
                 <CalendarPlus className="w-4 h-4" />
                 Solicitar Informações de Viagem
               </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Falar no WhatsApp
-              </a>
             </div>
           </div>
         ) : (
@@ -662,9 +655,8 @@ export default function HomePage() {
               Pronto para planejar seu próximo momento de lazer?
             </h2>
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Solicite seu agendamento pela plataforma ou fale diretamente com a Celina Sousa Turismo
-              pelo WhatsApp {settings.phone_display || '(64) 9 9206-5866'} e siga nosso Instagram{' '}
-              {settings.instagram_handle || '@celinasousaturismo'}.
+              Solicite seu agendamento online pela plataforma e acompanhe todas as etapas da sua
+              reserva com tranquilidade e segurança.
             </p>
           </div>
 
@@ -677,20 +669,11 @@ export default function HomePage() {
               <CalendarPlus className="w-5 h-5" />
               Solicitar Agendamento Online
             </button>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition-all"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Falar pelo WhatsApp ({settings.phone_display || '(64) 9 9206-5866'})
-            </a>
             <Link
               to="/contato"
               className="w-full py-3.5 px-6 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm flex items-center justify-center gap-2 border border-white/15 transition-all"
             >
-              <span>Enviar Mensagem / Solicitar Informações</span>
+              <span>Enviar Mensagem / Página de Contato</span>
             </Link>
           </div>
         </div>

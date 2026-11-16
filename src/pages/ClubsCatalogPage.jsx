@@ -145,15 +145,6 @@ export default function ClubsCatalogPage() {
                 <CalendarPlus className="w-4 h-4" />
                 Solicitar Agendamento
               </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Falar pelo WhatsApp
-              </a>
             </div>
           </div>
         ) : (

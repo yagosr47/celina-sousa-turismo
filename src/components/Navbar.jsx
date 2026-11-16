@@ -78,50 +78,21 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/92 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
-      {/* Top Info Strip — Optimized for Mobile & Desktop */}
+      {/* Top Info Strip — Clean & Uncluttered */}
       <div className="bg-gradient-to-r from-slate-950 via-brand-950 to-slate-950 text-white text-[11px] sm:text-xs py-1.5 px-3 sm:px-6 border-b border-white/10">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-bold transition-colors truncate"
-            >
-              <PhoneCall className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 shrink-0" />
-              <span>{settings.phone_display || '(64) 9 9206-5866'}</span>
-            </a>
-            <span className="hidden md:inline text-white/25">•</span>
-            <a
-              href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:inline-flex items-center gap-1 text-slate-200 hover:text-brand-200 transition-colors font-medium"
-            >
-              <Instagram className="w-3.5 h-3.5 text-brand-400" />
-              <span>{settings.instagram_handle || '@celinasousaturismo'}</span>
-            </a>
-          </div>
+          <span className="font-semibold text-brand-200 truncate">
+            {settings.company_name || 'Celina Sousa Turismo'} •{' '}
+            {settings.company_subtitle || 'Caldas Locações'}
+          </span>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <a
-              href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="md:hidden inline-flex items-center gap-1 text-slate-300 hover:text-white font-semibold"
-            >
-              <Instagram className="w-3 h-3 text-brand-400" />
-              <span>Instagram</span>
-            </a>
-            <span className="text-white/25">|</span>
-            <Link
-              to="/admin"
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-brand-200 hover:text-white font-bold transition-colors"
-            >
-              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-300" />
-              <span>Portal ADM</span>
-            </Link>
-          </div>
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-brand-200 hover:text-white font-bold transition-colors shrink-0"
+          >
+            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-300" />
+            <span>Portal ADM</span>
+          </Link>
         </div>
       </div>
 
@@ -356,29 +327,17 @@ export default function Navbar() {
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2.5">
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openBookingModal();
-                }}
-                className="py-3 px-3 rounded-2xl bg-gradient-to-r from-brand-600 to-sky-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <CalendarPlus className="w-4 h-4 shrink-0" />
-                <span>Agendar Agora</span>
-              </button>
-
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 px-3 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openBookingModal();
+              }}
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-brand-600 to-sky-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm"
+            >
+              <CalendarPlus className="w-4 h-4 shrink-0" />
+              <span>Solicitar Agendamento</span>
+            </button>
 
             {!user && (
               <div className="grid grid-cols-2 gap-2 pt-1">

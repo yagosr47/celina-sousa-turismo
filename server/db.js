@@ -415,6 +415,18 @@ function seedInitialData() {
     `).run(config.adminPassBcrypt, existingAdmin.id);
   }
 
+  const celinaPersonalStory = `Minha história com o turismo começou em 2020, em um momento de grandes mudanças na minha vida. Após minha separação, assumi a responsabilidade de cuidar dos meus dois filhos, que na época tinham 9 e 12 anos. Em busca de uma nova oportunidade de renda, comecei a trabalhar com locações de hospedagens em Caldas Novas.
+
+Pouco tempo depois, veio a pandemia, trazendo desafios e interrompendo nossas atividades por aproximadamente um ano. Foi um período difícil, mas nunca pensei em desistir.
+
+Sempre fui apaixonada por lidar com pessoas. Sou comunicativa, carismática e acredito que pequenos gestos podem transformar experiências. Gosto de ajudar, acolher e, principalmente, de participar da realização de sonhos.
+
+Foi assim que descobri no turismo muito mais do que uma profissão: encontrei uma verdadeira paixão e um propósito que carrego com amor, dedicação e responsabilidade.
+
+Hoje, através da Celina Sousa Turismo, meu objetivo é proporcionar muito mais do que hospedagens e viagens: quero ajudar pessoas e famílias a viverem momentos especiais, criarem boas lembranças e desfrutarem de experiências que ficarão para sempre na memória.
+
+Será um prazer fazer parte da sua próxima viagem!`;
+
   // 2. Seed Site Settings with ONLY verified facts from the official brand & prompt
   const defaultSettings = {
     company_name: 'Celina Sousa Turismo',
@@ -424,8 +436,8 @@ function seedInitialData() {
     hero_title: 'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado',
     hero_subtitle: 'Conheça opções de lazer, clubes, hospedagens e viagens selecionadas por Celina Sousa Turismo. Solicite informações ou seu agendamento online com praticidade e segurança.',
     hero_banner_url: '/assets/images/hero-resort.jpg',
-    presentation_title: 'Bem-vindo à Celina Sousa Turismo',
-    presentation_text: 'A Celina Sousa Turismo — Caldas Locações atua na divulgação e intermediação de locações, clubes, parques aquáticos, hotéis, destinos turísticos e viagens. Nosso objetivo é oferecer um atendimento transparente, organizado e direto para que você e sua família planejem seus momentos de lazer com tranquilidade.',
+    presentation_title: 'Olá, sou Celina Sousa!',
+    presentation_text: celinaPersonalStory,
     whatsapp_number: '64992065866',
     phone_display: '(64) 9 9206-5866',
     instagram_handle: '@celinasousaturismo',
@@ -433,22 +445,22 @@ function seedInitialData() {
     email_contact: '',
     address_info: '',
     business_hours: '',
-    about_history: '',
-    about_objective: 'Conectar clientes a clubes, locações em Caldas e região, destinos turísticos e excursões com atendimento dedicado, informações claras e acompanhamento em todas as etapas da solicitação.',
+    about_history: celinaPersonalStory,
+    about_objective: 'Proporcionar muito mais do que hospedagens e viagens: ajudar pessoas e famílias a viverem momentos especiais, criarem boas lembranças e desfrutarem de experiências que ficarão para sempre na memória.',
     about_services: JSON.stringify([
-      'Caldas Locações — Locações para temporada e lazer',
+      'Caldas Locações — Locações de hospedagens em Caldas Novas e região',
       'Divulgação e agendamento de Clubes e Parques Aquáticos',
       'Hotéis, Hospedagens e Destinos Turísticos',
       'Viagens e Excursões organizadas',
-      'Atendimento personalizado via plataforma e WhatsApp'
+      'Atendimento personalizado e acolhedor'
     ]),
     about_differentials: JSON.stringify([
-      'Atendimento direto e humanizado com Celina Sousa',
+      'Atendimento direto, comunicativo e acolhedor com Celina Sousa',
+      'Dedicação, amor e responsabilidade na realização de sonhos em família',
       'Acompanhamento transparente do status da sua solicitação online',
-      'Informações detalhadas e fotos organizadas de cada clube, local ou viagem',
-      'Canal rápido via WhatsApp (64) 9 9206-5866 e Instagram @celinasousaturismo'
+      'Informações detalhadas e fotos organizadas de cada clube, local ou viagem'
     ]),
-    about_image_url: '/assets/images/about-tourism.jpg',
+    about_image_url: '/assets/images/celina-sousa.jpeg',
     about_secondary_image_url: '/assets/images/resort-apartment.jpg',
     promotions_banner_title: '',
     promotions_banner_text: '',
@@ -466,6 +478,26 @@ function seedInitialData() {
     SET value = '/assets/images/logo-profissional.svg'
     WHERE key = 'logo_url' AND value = '/assets/images/logo-original.jpeg'
   `).run();
+  db.prepare(`
+    UPDATE site_settings
+    SET value = '/assets/images/celina-sousa.jpeg'
+    WHERE key = 'about_image_url' AND (value = '' OR value = '/assets/images/about-tourism.jpg')
+  `).run();
+  db.prepare(`
+    UPDATE site_settings
+    SET value = 'Olá, sou Celina Sousa!'
+    WHERE key = 'presentation_title' AND value = 'Bem-vindo à Celina Sousa Turismo'
+  `).run();
+  db.prepare(`
+    UPDATE site_settings
+    SET value = ?
+    WHERE key = 'presentation_text' AND value LIKE 'A Celina Sousa Turismo — Caldas Locações atua%'
+  `).run(celinaPersonalStory);
+  db.prepare(`
+    UPDATE site_settings
+    SET value = ?
+    WHERE key = 'about_history' AND (value IS NULL OR value = '')
+  `).run(celinaPersonalStory);
 
   // 3. Seed Initial Gallery Items (using authentic generated tourism images, editable by Celina)
   const galleryCount = db.prepare('SELECT COUNT(*) as c FROM gallery_items').get().c;

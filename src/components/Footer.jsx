@@ -36,27 +36,6 @@ export default function Footer() {
               {settings.footer_text ||
                 'Celina Sousa Turismo — Caldas Locações. Atendimento especializado em turismo, clubes, locações e viagens.'}
             </p>
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
-              >
-                <MessageCircle className="w-4 h-4" />
-                WhatsApp
-              </a>
-              <a
-                href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 transition-colors"
-              >
-                <Instagram className="w-4 h-4 text-brand-400" />
-                {settings.instagram_handle || '@celinasousaturismo'}
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-              </a>
-            </div>
           </div>
 
           {/* Col 2: Navigation */}

@@ -149,15 +149,6 @@ export default function FaqPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Falar pelo WhatsApp
-            </a>
             <button
               type="button"
               onClick={() => openBookingModal()}
