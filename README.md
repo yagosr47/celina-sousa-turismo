@@ -12,7 +12,7 @@ Plataforma web completa, responsiva e administrável desenvolvida para **Celina 
 - **Empresa:** Celina Sousa Turismo — Caldas Locações
 - **WhatsApp e Telefone:** `(64) 9 9206-5866` (`https://wa.me/5564992065866`)
 - **Instagram:** [`@celinasousaturismo`](https://www.instagram.com/celinasousaturismo/)
-- **Logotipo Oficial:** `/assets/images/logo-original.jpeg` (editável pelo Painel Administrativo)
+- **Logotipo Profissional Vetorial:** `/assets/images/logo-profissional.svg` (editável pelo Painel Administrativo)
 
 > **Importante:** Nenhum preço, endereço, política comercial ou disponibilidade fictícia foi fixado no código. Todas as informações comerciais, clubes, viagens, fotos, perguntas frequentes, depoimentos e textos institucionais são armazenados no banco de dados relacional e gerenciados diretamente pela Celina no Painel Administrativo.
 

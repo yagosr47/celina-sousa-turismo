@@ -218,9 +218,9 @@ export default function AdminPanelPage() {
           </div>
         </div>
 
-        {/* Desktop Tab Bar */}
-        <div className="hidden lg:block bg-slate-900 border-t border-slate-800/80">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 py-2 overflow-x-auto">
+        {/* Horizontal Scrollable Tab Bar (Mobile & Desktop) */}
+        <div className="bg-slate-900 border-t border-slate-800/80">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -229,13 +229,13 @@ export default function AdminPanelPage() {
                   key={item.id}
                   type="button"
                   onClick={() => handleSelectTab(item.id)}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                  className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
                     isActive
                       ? 'bg-brand-500 text-slate-950 font-extrabold shadow'
                       : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>{item.label}</span>
                   {item.badge ? (
                     <span

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { buildWhatsAppUrl } from '../lib/api';
+import BrandLogo from '../components/BrandLogo';
 
 function parseListSetting(raw) {
   if (!raw) return [];
@@ -62,20 +63,8 @@ export default function AboutPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-3 p-3 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <img
-                src={settings.logo_url || '/assets/images/logo-original.jpeg'}
-                alt={settings.company_name || 'Celina Sousa Turismo'}
-                className="h-16 w-auto object-contain rounded-lg"
-              />
-              <div>
-                <h2 className="text-lg font-extrabold text-slate-900">
-                  {settings.company_name || 'Celina Sousa Turismo'}
-                </h2>
-                <p className="text-xs font-bold text-brand-600 uppercase tracking-wider">
-                  {settings.company_subtitle || 'Caldas Locações'}
-                </p>
-              </div>
+            <div className="inline-flex items-center gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <BrandLogo size="md" />
             </div>
 
             <div className="space-y-4">

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="20" y1="15" x2="160" y2="165" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="50%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="65" y1="42" x2="115" y2="98" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id="waveGrad1" x1="35" y1="115" x2="145" y2="145" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#67E8F9" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="185" y1="118" x2="430" y2="148" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+    <filter id="softShadow" x="5" y="5" width="170" height="170" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0284C7" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Emblem Container -->
+  <g filter="url(#softShadow)">
+    <rect x="20" y="18" width="144" height="144" rx="38" fill="url(#bgGrad)" />
+    <rect x="23" y="21" width="138" height="138" rx="35" stroke="#38BDF8" stroke-opacity="0.35" stroke-width="2" />
+  </g>
+
+  <!-- Golden Sun -->
+  <circle cx="92" cy="78" r="28" fill="url(#sunGrad)" />
+  <circle cx="92" cy="78" r="34" stroke="#FDE047" stroke-opacity="0.28" stroke-width="3" stroke-dasharray="4 6" />
+
+  <!-- Resort Palm Silhouette -->
+  <path d="M74 114C75 95 81 80 88 68C85 82 81 97 80 114H74Z" fill="#0F172A" />
+  <path d="M88 69C76 62 63 64 54 71C65 69 76 70 86 74L88 69Z" fill="#0F172A" />
+  <path d="M88 68C79 56 67 52 57 55C68 57 78 62 86 70L88 68Z" fill="#0F172A" />
+  <path d="M88 68C98 56 111 54 121 59C110 59 99 63 90 70L88 68Z" fill="#0F172A" />
+  <path d="M88 69C101 64 114 67 122 76C112 72 100 71 90 74L88 69Z" fill="#0F172A" />
+
+  <!-- Thermal Waves -->
+  <path d="M36 116C52 108 68 108 84 115C100 122 118 122 148 111V133C118 142 100 142 84 135C68 128 52 128 36 136V116Z" fill="url(#waveGrad1)" />
+  <path d="M44 136C60 130 76 130 92 136C108 142 124 142 140 135V147C120 155 104 154 92 149C76 143 60 143 44 148V136Z" fill="#E0F2FE" fill-opacity="0.9" />
+
+  <!-- Flight Arc & Jet -->
+  <path d="M46 58C68 38 104 34 132 47" stroke="#FFFFFF" stroke-opacity="0.75" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 5" />
+  <path d="M141 51L127 42L130 49L124 54L141 51Z" fill="#FFFFFF" />
+
+  <!-- Typography Section -->
+  <text x="186" y="76" fill="#0F172A" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="40" font-weight="800" letter-spacing="-0.8">
+    Celina Sousa
+  </text>
+  <text x="188" y="106" fill="#0284C7" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="21" font-weight="800" letter-spacing="5.5">
+    TURISMO
+  </text>
+
+  <!-- Pill Badge for Caldas Locações -->
+  <rect x="186" y="120" width="234" height="32" rx="16" fill="url(#goldAccent)" />
+  <circle cx="204" cy="136" r="5" fill="#FDE047" />
+  <text x="218" y="141" fill="#FFFFFF" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="13.5" font-weight="800" letter-spacing="2.2">
+    CALDAS LOCAÇÕES
+  </text>
+</svg>
