@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Plane,
-  CalendarPlus,
   Sparkles,
   ArrowRight,
   Building2,
-  Compass,
   ShieldCheck,
   Star,
   HelpCircle,
@@ -15,15 +13,15 @@ import {
   Maximize2,
   Heart,
   UserCheck,
+  Info,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ClubCard from '../components/ClubCard';
-import TripCard from '../components/TripCard';
 import ImageLightbox from '../components/ImageLightbox';
 
 export default function HomePage() {
-  const { siteData, loadingSite, openBookingModal } = useApp();
-  const { settings, clubs, trips, testimonials, faqs, gallery } = siteData;
+  const { siteData, loadingSite, user } = useApp();
+  const { settings, clubs, testimonials, faqs, gallery } = siteData;
 
   const [selectedGalleryCat, setSelectedGalleryCat] = useState('Todas');
   const [lightboxIndex, setLightboxIndex] = useState(null);
@@ -45,7 +43,9 @@ export default function HomePage() {
       ? gallery
       : gallery.filter((g) => g.category === selectedGalleryCat);
 
-  const clubsWithPromos = (clubs || []).filter((c) => c.promotions && String(c.promotions).trim() !== '');
+  const clubsWithPromos = (clubs || []).filter(
+    (c) => c.promotions && String(c.promotions).trim() !== ''
+  );
   const hasPromoBanner =
     settings.promotions_active === '1' &&
     (settings.promotions_banner_title || settings.promotions_banner_text);
@@ -53,7 +53,7 @@ export default function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-20 pb-12 sm:pb-20">
       {/* 1. HERO BANNER PRINCIPAL */}
-      <section className="relative min-h-[520px] sm:min-h-[600px] lg:min-h-[660px] flex items-center overflow-hidden bg-slate-900">
+      <section className="relative min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden bg-slate-900">
         <img
           src={settings.hero_banner_url || '/assets/images/hero-resort.jpg'}
           alt={settings.company_name || 'Celina Sousa Turismo'}
@@ -72,46 +72,55 @@ export default function HomePage() {
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.13]">
               {settings.hero_title ||
-                'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado'}
+                'Conheça os Melhores Clubes, Parques Aquáticos e Locações'}
             </h1>
 
             <p className="text-sm sm:text-lg text-slate-200 leading-relaxed max-w-2xl">
               {settings.hero_subtitle ||
-                'Conheça opções de lazer, clubes, hospedagens e viagens selecionadas por Celina Sousa Turismo. Solicite informações ou seu agendamento online com praticidade e segurança.'}
+                'Explore nossa seleção de clubes, parques aquáticos e opções de lazer. Veja fotos, estrutura completa, piscinas e informações detalhadas de cada clube.'}
             </p>
 
             <div className="pt-1 sm:pt-2 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4">
-              <button
-                type="button"
-                onClick={() => openBookingModal()}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-sky-400 hover:from-brand-400 hover:to-sky-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-brand-500/25 transition-all hover:-translate-y-0.5 active:scale-[0.99]"
-              >
-                <CalendarPlus className="w-5 h-5" />
-                <span>Solicitar Agendamento</span>
-              </button>
-
               <Link
                 to="/clubes"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-sky-400 hover:from-brand-400 hover:to-sky-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-brand-500/25 transition-all hover:-translate-y-0.5 active:scale-[0.99]"
+              >
+                <Building2 className="w-5 h-5" />
+                <span>Explorar Clubes e Destinos</span>
+              </Link>
+
+              <Link
+                to="/sobre"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-sm sm:text-base border border-white/20 transition-all"
               >
-                <span>Ver Clubes e Destinos</span>
+                <span>Conhecer a Celina Sousa</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
+
+              {user?.role === 'admin' && (
+                <Link
+                  to="/painel-celina?tab=clubes"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-brand-300 font-bold text-sm border border-brand-400/40 transition-all"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Gerenciar Clubes (ADM)</span>
+                </Link>
+              )}
             </div>
 
             {/* Trust badges */}
             <div className="pt-3 sm:pt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-2xl text-xs text-slate-200">
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
-                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
-                <span>Atendimento direto e transparente</span>
-              </div>
-              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
                 <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
                 <span>Clubes, Parques e Caldas Locações</span>
               </div>
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
-                <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
-                <span>Acompanhamento online da reserva</span>
+                <Info className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
+                <span>Fotos e detalhes de cada clube</span>
+              </div>
+              <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
+                <span>Atendimento direto e acolhedor</span>
               </div>
             </div>
           </div>
@@ -132,40 +141,24 @@ export default function HomePage() {
               <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
                 Clubes e Parques
               </p>
-              <p className="text-[11px] text-slate-500 truncate">Lazer e águas termais</p>
+              <p className="text-[11px] text-slate-500 truncate">Saber mais de cada clube</p>
             </div>
           </Link>
 
-          <Link
-            to="/viagens"
+          <a
+            href="#galeria"
             className="group bg-white hover:bg-brand-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
           >
             <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-              <Compass className="w-5 h-5 sm:w-6 sm:h-6" />
+              <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="min-w-0">
               <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                Viagens e Pacotes
+                Galeria de Fotos
               </p>
-              <p className="text-[11px] text-slate-500 truncate">Roteiros e excursões</p>
+              <p className="text-[11px] text-slate-500 truncate">Piscinas e lazer</p>
             </div>
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => openBookingModal()}
-            className="group bg-white hover:bg-brand-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 text-left transition-all hover:-translate-y-0.5"
-          >
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-              <CalendarPlus className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                Agendar Online
-              </p>
-              <p className="text-[11px] text-slate-500 truncate">Solicitação rápida</p>
-            </div>
-          </button>
+          </a>
 
           <Link
             to="/sobre"
@@ -181,10 +174,165 @@ export default function HomePage() {
               <p className="text-[11px] text-slate-500 truncate">Nossa história e missão</p>
             </div>
           </Link>
+
+          <Link
+            to="/perguntas-frequentes"
+            className="group bg-white hover:bg-amber-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                Dúvidas Frequentes
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">Saiba como funciona</p>
+            </div>
+          </Link>
         </div>
       </section>
 
-      {/* 2. APRESENTAÇÃO PESSOAL DA CELINA SOUSA */}
+      {/* 2. ÁREA DE CLUBES E DESTINOS (MODIFICADA PELO ADM) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
+              Catálogo de Clubes
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-2">
+              Clubes e Destinos — Saiba Mais de Cada Clube
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base mt-1">
+              Clique em qualquer clube abaixo para ver fotos ampliadas, piscinas, estrutura e
+              informações completas.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            {user?.role === 'admin' && (
+              <Link
+                to="/painel-celina?tab=clubes"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow"
+              >
+                <ShieldCheck className="w-4 h-4 text-brand-400" />
+                <span>Adicionar / Editar Clubes (ADM)</span>
+              </Link>
+            )}
+            <Link
+              to="/clubes"
+              className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 hover:text-brand-800"
+            >
+              <span>Ver todos os clubes</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        {loadingSite ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="h-96 rounded-3xl bg-slate-200/70 animate-pulse border border-slate-200"
+              />
+            ))}
+          </div>
+        ) : clubs.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
+              <Building2 className="w-7 h-7" />
+            </div>
+            <div className="max-w-lg mx-auto space-y-2">
+              <h3 className="text-xl font-bold text-slate-900">
+                Vitrine de Clubes e Destinos
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Aqui ficam listados todos os clubes, parques aquáticos e estruturas divulgadas pela
+                Celina Sousa Turismo para você conhecer cada detalhe.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {user?.role === 'admin' ? (
+                <Link
+                  to="/painel-celina?tab=clubes"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Cadastrar Primeiro Clube no Painel ADM</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/contato"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
+                >
+                  <span>Consultar Informações de Clubes</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            {clubs.slice(0, 6).map((club) => (
+              <ClubCard key={club.id} club={club} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 3. OFERTAS E DESTAQUES DOS CLUBES (QUANDO CADASTRADOS PELO ADM) */}
+      {(hasPromoBanner || clubsWithPromos.length > 0) && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white p-8 sm:p-10 shadow-xl border border-brand-700/50 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Destaques e Condições Especiais
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold">
+                  {settings.promotions_banner_title || 'Clubes com Condições em Destaque'}
+                </h2>
+                {settings.promotions_banner_text && (
+                  <p className="text-brand-100 text-sm sm:text-base max-w-2xl">
+                    {settings.promotions_banner_text}
+                  </p>
+                )}
+              </div>
+              <Link
+                to="/clubes"
+                className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm shadow transition-all"
+              >
+                <span>Ver Todos os Clubes</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {clubsWithPromos.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                {clubsWithPromos.map((c) => (
+                  <div
+                    key={c.id}
+                    className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-between gap-4"
+                  >
+                    <div>
+                      <h3 className="font-bold text-white">{c.name}</h3>
+                      <p className="text-xs text-brand-200 mt-0.5">{c.promotions}</p>
+                    </div>
+                    <Link
+                      to={`/clubes/${c.slug}`}
+                      className="shrink-0 px-3.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-bold hover:bg-brand-50"
+                    >
+                      Saber Mais
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* 4. APRESENTAÇÃO PESSOAL DA CELINA SOUSA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Foto da Celina com bordas em variação de Azul Claro, Médio e Escuro */}
@@ -270,208 +418,21 @@ export default function HomePage() {
                 <span>Ver Mais Sobre a Empresa</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <button
-                type="button"
-                onClick={() => openBookingModal()}
+              <Link
+                to="/clubes"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-brand-300 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-bold transition-all"
               >
-                <CalendarPlus className="w-4 h-4" />
-                <span>Solicitar Agendamento</span>
-              </button>
+                <Building2 className="w-4 h-4" />
+                <span>Conhecer os Clubes</span>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. OFERTAS E PROMOÇÕES (QUANDO CADASTRADAS) */}
-      {(hasPromoBanner || clubsWithPromos.length > 0) && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white p-8 sm:p-10 shadow-xl border border-brand-700/50 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Ofertas e Condições Especiais
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold">
-                  {settings.promotions_banner_title || 'Promoções e Destaques Cadastrados'}
-                </h2>
-                {settings.promotions_banner_text && (
-                  <p className="text-brand-100 text-sm sm:text-base max-w-2xl">
-                    {settings.promotions_banner_text}
-                  </p>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => openBookingModal()}
-                className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm shadow transition-all"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Consultar Promoção
-              </button>
-            </div>
-
-            {clubsWithPromos.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                {clubsWithPromos.map((c) => (
-                  <div
-                    key={c.id}
-                    className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-between gap-4"
-                  >
-                    <div>
-                      <h3 className="font-bold text-white">{c.name}</h3>
-                      <p className="text-xs text-brand-200 mt-0.5">{c.promotions}</p>
-                    </div>
-                    <Link
-                      to={`/clubes/${c.slug}`}
-                      className="shrink-0 px-3.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-bold hover:bg-brand-50"
-                    >
-                      Ver Clube
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* 4. CATÁLOGO DE CLUBES E DESTINOS EM DESTAQUE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
-              Catálogo Principal
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-2">
-              Clubes e Destinos
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base mt-1">
-              Conheça clubes, parques aquáticos, hotéis e destinos com fotos e detalhes completos.
-            </p>
-          </div>
-          <Link
-            to="/clubes"
-            className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 hover:text-brand-800"
-          >
-            <span>Ver catálogo completo</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {loadingSite ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="h-96 rounded-3xl bg-slate-200/70 animate-pulse border border-slate-200"
-              />
-            ))}
-          </div>
-        ) : clubs.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
-              <Building2 className="w-7 h-7" />
-            </div>
-            <div className="max-w-lg mx-auto space-y-2">
-              <h3 className="text-xl font-bold text-slate-900">
-                Catálogo de Clubes e Destinos em Atualização
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Os clubes e opções de lazer estão sendo organizados pela Celina Sousa Turismo. Você já
-                pode solicitar atendimento personalizado ou agendamento diretamente abaixo!
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => openBookingModal({ itemType: 'destination' })}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Solicitar Consulta / Agendamento
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {clubs.slice(0, 6).map((club) => (
-              <ClubCard key={club.id} club={club} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* 5. VIAGENS E PACOTES DISPONÍVEIS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
-              Roteiros e Excursões
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-2">
-              Viagens e Pacotes Disponíveis
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base mt-1">
-              Excursões e pacotes organizados com acompanhamento completo da Celina Sousa Turismo.
-            </p>
-          </div>
-          <Link
-            to="/viagens"
-            className="inline-flex items-center gap-2 text-sm font-bold text-brand-700 hover:text-brand-800"
-          >
-            <span>Ver todas as viagens</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {loadingSite ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="h-96 rounded-3xl bg-slate-200/70 animate-pulse border border-slate-200"
-              />
-            ))}
-          </div>
-        ) : trips.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
-              <Compass className="w-7 h-7" />
-            </div>
-            <div className="max-w-lg mx-auto space-y-2">
-              <h3 className="text-xl font-bold text-slate-900">
-                Novos Roteiros e Viagens sob Consulta
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Consulte a programação de próximas excursões e viagens diretamente com a Celina Sousa
-                Turismo ou solicite informações para seu grupo.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => openBookingModal({ itemType: 'trip' })}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Solicitar Informações de Viagem
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {trips.slice(0, 6).map((trip) => (
-              <TripCard key={trip.id} trip={trip} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* 6. GALERIA DE IMAGENS */}
+      {/* 5. GALERIA DE IMAGENS */}
       {gallery && gallery.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <section id="galeria" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
@@ -487,13 +448,13 @@ export default function HomePage() {
             </div>
 
             {galleryCategories.length > 1 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
                 {galleryCategories.map((cat) => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => setSelectedGalleryCat(cat)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
                       selectedGalleryCat === cat
                         ? 'bg-brand-600 text-white shadow'
                         : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -547,7 +508,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 7. DEPOIMENTOS DE CLIENTES (QUANDO CADASTRADOS) */}
+      {/* 6. DEPOIMENTOS DE CLIENTES (QUANDO CADASTRADOS) */}
       {testimonials && testimonials.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center max-w-2xl mx-auto">
@@ -558,7 +519,7 @@ export default function HomePage() {
               Depoimentos de Clientes
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-1">
-              Veja a experiência de quem agendou clubes, locações e viagens com a Celina Sousa Turismo.
+              Veja a experiência de quem conhece o atendimento da Celina Sousa Turismo.
             </p>
           </div>
 
@@ -588,7 +549,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 8. PERGUNTAS FREQUENTES EM DESTAQUE */}
+      {/* 7. PERGUNTAS FREQUENTES EM DESTAQUE */}
       {faqs && faqs.length > 0 && (
         <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -644,36 +605,35 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 9. BANNER FINAL DE CONTATO E SOLICITAÇÃO */}
+      {/* 8. BANNER FINAL DE CLUBES E CONTATO */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-brand-950 to-slate-900 text-white p-8 sm:p-12 lg:p-14 shadow-2xl border border-slate-800 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold uppercase tracking-wider border border-brand-400/30">
-              Atendimento Personalizado
+              Celina Sousa Turismo • Caldas Locações
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold leading-tight">
-              Pronto para planejar seu próximo momento de lazer?
+              Conheça os detalhes completos de cada clube e destino!
             </h2>
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Solicite seu agendamento online pela plataforma e acompanhe todas as etapas da sua
-              reserva com tranquilidade e segurança.
+              Navegue pelo nosso catálogo de clubes para ver fotos, estrutura, piscinas e opções de
+              lazer, ou entre em contato diretamente com nossa equipe.
             </p>
           </div>
 
           <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col gap-3">
-            <button
-              type="button"
-              onClick={() => openBookingModal()}
+            <Link
+              to="/clubes"
               className="w-full py-4 px-6 rounded-2xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg transition-all"
             >
-              <CalendarPlus className="w-5 h-5" />
-              Solicitar Agendamento Online
-            </button>
+              <Building2 className="w-5 h-5" />
+              <span>Ver Todos os Clubes</span>
+            </Link>
             <Link
               to="/contato"
               className="w-full py-3.5 px-6 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm flex items-center justify-center gap-2 border border-white/15 transition-all"
             >
-              <span>Enviar Mensagem / Página de Contato</span>
+              <span>Página de Contato / Dúvidas</span>
             </Link>
           </div>
         </div>

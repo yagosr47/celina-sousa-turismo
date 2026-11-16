@@ -1,376 +1,228 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
-  Users,
   Building2,
-  Compass,
-  Clock,
-  CheckCircle2,
+  Users,
   MessageSquare,
-  ArrowRight,
-  Calendar,
-  TrendingUp,
   PlusCircle,
+  Settings,
+  Image as ImageIcon,
+  ExternalLink,
+  Smartphone,
+  MapPin,
 } from 'lucide-react';
-import { formatDateBR, formatDateTimeBR } from '../../lib/api';
-
-const STATUS_COLORS = {
-  'Aguardando análise': 'bg-amber-100 text-amber-800 border-amber-300',
-  Aprovado: 'bg-sky-100 text-sky-800 border-sky-300',
-  'Aguardando pagamento': 'bg-purple-100 text-purple-800 border-purple-300',
-  Confirmado: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  Recusado: 'bg-rose-100 text-rose-800 border-rose-300',
-  Cancelado: 'bg-slate-200 text-slate-700 border-slate-300',
-  Concluído: 'bg-brand-100 text-brand-800 border-brand-300',
-};
-
-const BAR_COLORS = {
-  'Aguardando análise': 'bg-amber-500',
-  Aprovado: 'bg-sky-500',
-  'Aguardando pagamento': 'bg-purple-500',
-  Confirmado: 'bg-emerald-500',
-  Recusado: 'bg-rose-500',
-  Cancelado: 'bg-slate-400',
-  Concluído: 'bg-brand-600',
-};
+import { useApp } from '../../context/AppContext';
+import { formatCurrencyBR } from '../../lib/api';
 
 export default function AdminDashboardTab({ dashboard, onNavigateTab }) {
-  const metrics = dashboard?.metrics || {
-    totalCustomers: 0,
-    totalClubs: 0,
-    publishedClubs: 0,
-    totalTrips: 0,
-    publishedTrips: 0,
-    pendingBookings: 0,
-    confirmedBookings: 0,
-    totalBookings: 0,
-    unreadMessages: 0,
-  };
+  const { siteData } = useApp();
+  const { clubs = [], gallery = [] } = siteData;
 
-  const bookingsByStatus = dashboard?.bookingsByStatus || [];
-  const upcomingTrips = dashboard?.upcomingTrips || [];
-  const recentBookings = dashboard?.recentBookings || [];
+  if (!dashboard) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-32 rounded-3xl bg-slate-200 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
-  const totalStatusCount = Math.max(
-    1,
-    bookingsByStatus.reduce((acc, s) => acc + Number(s.count || 0), 0)
-  );
+  const { metrics } = dashboard;
 
   const cards = [
     {
-      label: 'Total de Clientes Cadastrados',
-      value: metrics.totalCustomers,
-      sub: 'Contas de clientes ativas',
-      icon: Users,
-      color: 'from-brand-500 to-brand-700',
-      tab: 'clientes',
-    },
-    {
-      label: 'Total de Clubes Cadastrados',
-      value: metrics.totalClubs,
-      sub: `${metrics.publishedClubs} publicado(s) no site`,
+      title: 'Clubes Publicados',
+      value: clubs.length,
+      subtitle: 'Com páginas "Saber mais de cada clube"',
       icon: Building2,
-      color: 'from-cyan-500 to-teal-700',
-      tab: 'clubes',
+      color: 'bg-brand-50 text-brand-700 border-brand-200',
+      onClick: () => onNavigateTab('clubes'),
     },
     {
-      label: 'Total de Viagens Cadastradas',
-      value: metrics.totalTrips,
-      sub: `${metrics.publishedTrips} publicada(s) no site`,
-      icon: Compass,
-      color: 'from-indigo-500 to-indigo-700',
-      tab: 'viagens',
+      title: 'Fotos na Galeria Geral',
+      value: gallery.length,
+      subtitle: 'Imagens exibidas no site público',
+      icon: ImageIcon,
+      color: 'bg-sky-50 text-sky-700 border-sky-200',
+      onClick: () => onNavigateTab('conteudo'),
     },
     {
-      label: 'Solicitações Pendentes',
-      value: metrics.pendingBookings,
-      sub: 'Aguardando sua análise',
-      icon: Clock,
-      color: 'from-amber-500 to-orange-600',
-      tab: 'agendamentos',
+      title: 'Clientes Cadastrados',
+      value: metrics.totalCustomers,
+      subtitle: 'Contas criadas na plataforma',
+      icon: Users,
+      color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      onClick: () => onNavigateTab('clientes'),
     },
     {
-      label: 'Reservas Confirmadas',
-      value: metrics.confirmedBookings,
-      sub: 'Agendamentos confirmados',
-      icon: CheckCircle2,
-      color: 'from-emerald-500 to-emerald-700',
-      tab: 'agendamentos',
-    },
-    {
-      label: 'Mensagens Novas',
+      title: 'Mensagens de Contato',
       value: metrics.unreadMessages,
-      sub: 'Formulário de contato',
+      subtitle: 'Dúvidas recebidas pelo site',
       icon: MessageSquare,
-      color: 'from-slate-700 to-slate-900',
-      tab: 'mensagens',
+      color: 'bg-amber-50 text-amber-700 border-amber-200',
+      onClick: () => onNavigateTab('mensagens'),
     },
   ];
 
   return (
     <div className="space-y-8">
-      {/* Quick Action Banner */}
-      <div className="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-brand-300">
-            Visão Geral do Sistema
+      {/* Device Persistence Notice & Quick Actions */}
+      <div className="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="space-y-2 max-w-2xl">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-400/20 border border-emerald-400/30 text-emerald-200 text-xs font-extrabold uppercase tracking-wider">
+            <Smartphone className="w-3.5 h-3.5" />
+            Login ADM Salvo Neste Dispositivo
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold">
-            Painel de Controle — Celina Sousa Turismo
+            Gestão de Clubes e Conteúdo do Site
           </h2>
-          <p className="text-xs sm:text-sm text-brand-100">
-            Todas as alterações feitas aqui atualizam o site público automaticamente.
+          <p className="text-xs sm:text-sm text-brand-100 leading-relaxed">
+            Adicione novos clubes, envie fotos de capa e galeria, edite descrições completas,
+            piscinas, estrutura e regras. Tudo o que você salvar aqui atualiza imediatamente a área{' '}
+            <strong>"Saber mais sobre este clube"</strong> para seus clientes.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={() => onNavigateTab('clubes')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-400 hover:bg-brand-300 text-slate-950 text-xs sm:text-sm font-extrabold shadow"
+            className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg transition-all"
           >
             <PlusCircle className="w-4 h-4" />
-            Gerenciar Clubes
+            <span>Adicionar / Editar Clubes</span>
           </button>
           <button
             type="button"
-            onClick={() => onNavigateTab('viagens')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-bold border border-white/20"
+            onClick={() => onNavigateTab('conteudo')}
+            className="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/15 transition-all"
           >
-            <PlusCircle className="w-4 h-4" />
-            Gerenciar Viagens
-          </button>
-          <button
-            type="button"
-            onClick={() => onNavigateTab('agendamentos')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-bold border border-white/20"
-          >
-            Ver Solicitações ({metrics.pendingBookings})
+            <Settings className="w-4 h-4" />
+            <span>Editar Textos e Fotos</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {cards.map((c, idx) => {
-          const Icon = c.icon;
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {cards.map((card, idx) => {
+          const Icon = card.icon;
           return (
-            <div
+            <button
               key={idx}
-              onClick={() => onNavigateTab(c.tab)}
-              className="group bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start justify-between gap-4"
+              type="button"
+              onClick={card.onClick}
+              className="text-left bg-white rounded-3xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex items-start justify-between gap-4"
             >
               <div className="space-y-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  {c.label}
-                </span>
-                <p className="text-3xl sm:text-4xl font-extrabold text-slate-900">{c.value}</p>
-                <p className="text-xs text-slate-500 group-hover:text-brand-700 transition-colors">
-                  {c.sub} →
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  {card.title}
                 </p>
+                <p className="text-3xl font-extrabold text-slate-900">{card.value ?? 0}</p>
+                <p className="text-xs text-slate-500">{card.subtitle}</p>
               </div>
-              <div
-                className={`p-3.5 rounded-2xl bg-gradient-to-br ${c.color} text-white shadow-md`}
-              >
+              <div className={`p-3 rounded-2xl border ${card.color}`}>
                 <Icon className="w-6 h-6" />
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
 
-      {/* Charts & Upcoming Trips */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Status Chart */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-brand-50 text-brand-700">
-                <TrendingUp className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-slate-900">
-                  Indicadores de Solicitações
-                </h3>
-                <p className="text-xs text-slate-500">Distribuição por status</p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-slate-500">
-              Total: {metrics.totalBookings}
-            </span>
-          </div>
-
-          {bookingsByStatus.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 text-center text-xs text-slate-500">
-              Os gráficos de distribuição serão preenchidos conforme os clientes enviarem
-              solicitações de agendamento.
-            </div>
-          ) : (
-            <div className="space-y-3.5">
-              {bookingsByStatus.map((item) => {
-                const pct = Math.round((Number(item.count) / totalStatusCount) * 100);
-                return (
-                  <div key={item.status} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-bold">
-                      <span className="text-slate-700">{item.status}</span>
-                      <span className="text-slate-900">
-                        {item.count} ({pct}%)
-                      </span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${
-                          BAR_COLORS[item.status] || 'bg-brand-600'
-                        }`}
-                        style={{ width: `${Math.max(6, pct)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Upcoming Trips */}
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-extrabold text-slate-900">Próximas Viagens</h3>
-              <p className="text-xs text-slate-500">Viagens e excursões cadastradas</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigateTab('viagens')}
-              className="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:underline"
-            >
-              <span>Gerenciar viagens</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {upcomingTrips.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-2">
-              <p className="text-xs text-slate-500">Nenhuma viagem cadastrada ainda.</p>
-              <button
-                type="button"
-                onClick={() => onNavigateTab('viagens')}
-                className="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold"
-              >
-                Cadastrar Primeira Viagem
-              </button>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {upcomingTrips.map((t) => (
-                <div
-                  key={t.id}
-                  className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-slate-900">{t.name}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-[11px] font-bold">
-                        {t.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
-                      <span>Destino: {t.destination}</span>
-                      {t.departure_date && (
-                        <span>• Saída: {formatDateBR(t.departure_date)}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="text-xs font-bold text-slate-700">
-                    {t.available_spots !== null && t.available_spots !== undefined
-                      ? `${t.available_spots} vaga(s)`
-                      : t.price_per_person || ''}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Recent Bookings */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
-        <div className="flex items-center justify-between">
+      {/* Lista Rápida de Clubes Publicados ("Saber mais de cada clube") */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-extrabold text-slate-900">Agendamentos Recentes</h3>
+            <h3 className="text-lg font-extrabold text-slate-900">
+              Clubes na Vitrine ("Saber mais de cada clube")
+            </h3>
             <p className="text-xs text-slate-500">
-              Últimas solicitações recebidas dos clientes
+              Visualize os clubes cadastrados ou clique em Gerenciar Clubes para adicionar fotos,
+              piscinas e detalhes.
             </p>
           </div>
           <button
             type="button"
-            onClick={() => onNavigateTab('agendamentos')}
-            className="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:underline"
+            onClick={() => onNavigateTab('clubes')}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow"
           >
-            <span>Ver todos os agendamentos</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <Building2 className="w-4 h-4" />
+            <span>Abrir Gerenciador de Clubes</span>
           </button>
         </div>
 
-        {recentBookings.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-slate-50 border border-slate-100 text-center text-sm text-slate-500">
-            Nenhuma solicitação de agendamento registrada ainda.
+        {clubs.length === 0 ? (
+          <div className="p-10 text-center space-y-4">
+            <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
+            <div className="space-y-1 max-w-md mx-auto">
+              <p className="text-base font-bold text-slate-900">
+                Nenhum clube cadastrado no momento
+              </p>
+              <p className="text-xs text-slate-500">
+                Clique no botão abaixo para cadastrar seus clubes, parques aquáticos e hospedagens
+                com fotos e informações completas.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigateTab('clubes')}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-extrabold shadow"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Cadastrar Primeiro Clube Agora</span>
+            </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-400 uppercase text-[11px]">
-                  <th className="py-3 pr-4">Código</th>
-                  <th className="py-3 px-4">Cliente</th>
-                  <th className="py-3 px-4">Clube / Viagem</th>
-                  <th className="py-3 px-4">Data Solicitada</th>
-                  <th className="py-3 px-4">Pessoas</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 pl-4 text-right">Ação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentBookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50">
-                    <td className="py-3.5 pr-4 font-mono font-bold text-brand-700">
-                      {b.booking_code}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <p className="font-bold text-slate-900">{b.customer_name}</p>
-                      <p className="text-xs text-slate-500">{b.customer_phone}</p>
-                    </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-800">{b.item_name}</td>
-                    <td className="py-3.5 px-4 text-slate-600">
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-brand-600" />
-                        {formatDateBR(b.desired_date)}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 font-semibold text-slate-700">
-                      {b.people_count}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
-                          STATUS_COLORS[b.status] || 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 pl-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => onNavigateTab('agendamentos')}
-                        className="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 text-xs font-bold"
-                      >
-                        Analisar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="divide-y divide-slate-100">
+            {clubs.map((club) => {
+              const locationLabel = [club.city, club.state].filter(Boolean).join(' - ');
+              const priceLabel = formatCurrencyBR(club.day_use_price);
+              return (
+                <div
+                  key={club.id}
+                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={club.cover_image || '/assets/images/waterpark-family.jpg'}
+                      alt={club.name}
+                      className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shrink-0"
+                    />
+                    <div>
+                      <h4 className="text-sm font-extrabold text-slate-900">{club.name}</h4>
+                      {locationLabel && (
+                        <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3.5 h-3.5 text-brand-600" />
+                          {locationLabel}
+                        </p>
+                      )}
+                      {priceLabel && (
+                        <p className="text-xs font-bold text-brand-700 mt-0.5">
+                          Valor: {priceLabel}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Link
+                      to={`/clubes/${club.slug}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Ver Página do Clube</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateTab('clubes')}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold"
+                    >
+                      <span>Editar no ADM</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

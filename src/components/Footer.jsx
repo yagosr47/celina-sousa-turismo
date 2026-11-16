@@ -7,15 +7,13 @@ import {
   MapPin,
   Clock,
   ShieldCheck,
-  MessageCircle,
-  ArrowUpRight,
 } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import { useApp } from '../context/AppContext';
 import { buildWhatsAppUrl } from '../lib/api';
 
 export default function Footer() {
-  const { siteData, openBookingModal } = useApp();
+  const { siteData, user } = useApp();
   const settings = siteData.settings || {};
 
   const whatsappUrl = buildWhatsAppUrl(
@@ -34,7 +32,7 @@ export default function Footer() {
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
               {settings.footer_text ||
-                'Celina Sousa Turismo — Caldas Locações. Atendimento especializado em turismo, clubes, locações e viagens.'}
+                'Celina Sousa Turismo — Caldas Locações. Conheça clubes, parques aquáticos, estruturas de lazer e destinos selecionados.'}
             </p>
           </div>
 
@@ -51,17 +49,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/clubes" className="hover:text-brand-300 transition-colors">
-                  Clubes e Destinos
-                </Link>
-              </li>
-              <li>
-                <Link to="/viagens" className="hover:text-brand-300 transition-colors">
-                  Viagens e Pacotes
+                  Clubes e Destinos (Saber Mais)
                 </Link>
               </li>
               <li>
                 <Link to="/sobre" className="hover:text-brand-300 transition-colors">
-                  Sobre a Empresa
+                  Sobre a Celina Sousa
                 </Link>
               </li>
               <li>
@@ -77,36 +70,47 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3: Customer & Access */}
+          {/* Col 3: Account & Access */}
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
-              Área do Cliente
+              Acesso à Plataforma
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <button
-                  type="button"
-                  onClick={() => openBookingModal()}
-                  className="hover:text-brand-300 transition-colors text-left"
-                >
-                  Solicitar Agendamento Online
-                </button>
-              </li>
-              <li>
-                <Link to="/entrar?modo=login" className="hover:text-brand-300 transition-colors">
-                  Entrar na minha conta
+                <Link to="/clubes" className="hover:text-brand-300 transition-colors">
+                  Explorar Clubes Cadastrados
                 </Link>
               </li>
-              <li>
-                <Link to="/entrar?modo=cadastro" className="hover:text-brand-300 transition-colors">
-                  Criar conta gratuita
-                </Link>
-              </li>
-              <li>
-                <Link to="/minha-conta" className="hover:text-brand-300 transition-colors">
-                  Acompanhar solicitações
-                </Link>
-              </li>
+              {!user ? (
+                <>
+                  <li>
+                    <Link to="/entrar?modo=login" className="hover:text-brand-300 transition-colors">
+                      Entrar na minha conta
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/entrar?modo=cadastro" className="hover:text-brand-300 transition-colors">
+                      Criar conta gratuita
+                    </Link>
+                  </li>
+                </>
+              ) : user.role === 'admin' ? (
+                <li>
+                  <Link
+                    to="/painel-celina"
+                    className="inline-flex items-center gap-1.5 text-brand-300 hover:text-white font-bold transition-colors"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    Gerenciar Clubes (Painel ADM)
+                  </Link>
+                </li>
+              ) : (
+                <li>
+                  <Link to="/minha-conta" className="hover:text-brand-300 transition-colors">
+                    Acessar Minha Conta
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -185,7 +189,7 @@ export default function Footer() {
           <p className="max-w-3xl leading-relaxed">
             <strong className="text-slate-300">Privacidade e LGPD:</strong>{' '}
             {settings.lgpd_notice ||
-              'Seus dados pessoais são coletados exclusivamente para processamento de solicitações de agendamento e atendimento pela Celina Sousa Turismo.'}
+              'Seus dados pessoais são coletados exclusivamente para acesso à sua conta e atendimento pela Celina Sousa Turismo.'}
           </p>
           <p className="shrink-0 text-slate-400">
             © {new Date().getFullYear()} {settings.company_name || 'Celina Sousa Turismo'} • Todos os direitos reservados.

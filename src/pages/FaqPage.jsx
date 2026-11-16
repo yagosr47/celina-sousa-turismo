@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   HelpCircle,
   ChevronDown,
-  MessageCircle,
-  CalendarPlus,
+  Building2,
   Search,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { buildWhatsAppUrl } from '../lib/api';
 
 export default function FaqPage() {
-  const { siteData, openBookingModal } = useApp();
-  const { faqs = [], settings = {} } = siteData;
+  const { siteData } = useApp();
+  const { faqs = [] } = siteData;
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
@@ -141,22 +140,27 @@ export default function FaqPage() {
         <div className="bg-gradient-to-r from-brand-50 to-white rounded-3xl border border-brand-200 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="space-y-1">
             <h3 className="text-lg font-extrabold text-slate-900">
-              Ainda ficou com alguma dúvida?
+              Quer saber mais detalhes sobre algum clube?
             </h3>
             <p className="text-sm text-slate-600">
-              Entre em contato diretamente com a Celina Sousa Turismo pelo WhatsApp ou envie uma
-              solicitação.
+              Explore a página completa de cada clube ou envie sua dúvida diretamente para a Celina
+              Sousa Turismo.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={() => openBookingModal()}
+            <Link
+              to="/clubes"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold shadow"
             >
-              <CalendarPlus className="w-4 h-4" />
-              Solicitar Reserva
-            </button>
+              <Building2 className="w-4 h-4" />
+              <span>Ver Clubes</span>
+            </Link>
+            <Link
+              to="/contato"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-bold"
+            >
+              <span>Página de Contato</span>
+            </Link>
           </div>
         </div>
       </section>

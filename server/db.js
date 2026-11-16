@@ -433,8 +433,8 @@ Será um prazer fazer parte da sua próxima viagem!`;
     company_subtitle: 'Caldas Locações',
     logo_url: '/assets/images/logo-profissional.svg',
     hero_badge: 'Celina Sousa Turismo • Caldas Locações',
-    hero_title: 'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado',
-    hero_subtitle: 'Conheça opções de lazer, clubes, hospedagens e viagens selecionadas por Celina Sousa Turismo. Solicite informações ou seu agendamento online com praticidade e segurança.',
+    hero_title: 'Conheça os Melhores Clubes, Parques Aquáticos e Locações',
+    hero_subtitle: 'Explore nossa vitrine de clubes, parques aquáticos e opções de lazer. Veja fotos, estrutura completa, piscinas e informações detalhadas de cada clube.',
     hero_banner_url: '/assets/images/hero-resort.jpg',
     presentation_title: 'Olá, sou Celina Sousa!',
     presentation_text: celinaPersonalStory,
@@ -449,16 +449,16 @@ Será um prazer fazer parte da sua próxima viagem!`;
     about_objective: 'Proporcionar muito mais do que hospedagens e viagens: ajudar pessoas e famílias a viverem momentos especiais, criarem boas lembranças e desfrutarem de experiências que ficarão para sempre na memória.',
     about_services: JSON.stringify([
       'Caldas Locações — Locações de hospedagens em Caldas Novas e região',
-      'Divulgação e agendamento de Clubes e Parques Aquáticos',
+      'Vitrine completa de Clubes e Parques Aquáticos ("Saber mais de cada clube")',
       'Hotéis, Hospedagens e Destinos Turísticos',
-      'Viagens e Excursões organizadas',
+      'Informações detalhadas de estrutura, piscinas e regras de cada clube',
       'Atendimento personalizado e acolhedor'
     ]),
     about_differentials: JSON.stringify([
       'Atendimento direto, comunicativo e acolhedor com Celina Sousa',
       'Dedicação, amor e responsabilidade na realização de sonhos em família',
-      'Acompanhamento transparente do status da sua solicitação online',
-      'Informações detalhadas e fotos organizadas de cada clube, local ou viagem'
+      'Página dedicada para saber mais de cada clube com fotos, piscinas e estrutura',
+      'Login salvo no seu dispositivo para acesso rápido à sua conta'
     ]),
     about_image_url: '/assets/images/celina-sousa.jpeg',
     about_secondary_image_url: '/assets/images/resort-apartment.jpg',
@@ -495,9 +495,14 @@ Será um prazer fazer parte da sua próxima viagem!`;
   `).run(celinaPersonalStory);
   db.prepare(`
     UPDATE site_settings
-    SET value = ?
-    WHERE key = 'about_history' AND (value IS NULL OR value = '')
-  `).run(celinaPersonalStory);
+    SET value = 'Conheça os Melhores Clubes, Parques Aquáticos e Locações'
+    WHERE key = 'hero_title' AND value = 'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado'
+  `).run();
+  db.prepare(`
+    UPDATE site_settings
+    SET value = 'Explore nossa vitrine de clubes, parques aquáticos e opções de lazer. Veja fotos, estrutura completa, piscinas e informações detalhadas de cada clube.'
+    WHERE key = 'hero_subtitle' AND value LIKE '%agendamento online%'
+  `).run();
 
   // 3. Seed Initial Gallery Items (using authentic generated tourism images, editable by Celina)
   const galleryCount = db.prepare('SELECT COUNT(*) as c FROM gallery_items').get().c;
@@ -543,48 +548,38 @@ Será um prazer fazer parte da sua próxima viagem!`;
     );
   }
 
-  // 4. Seed Initial FAQs (strictly factual about how the platform and consultation work, without inventing commercial policies)
+  // 4. Seed Initial FAQs (strictly factual about exploring clubs and consulting info)
+  db.prepare(`DELETE FROM faqs WHERE category = 'Agendamentos' OR question LIKE '%agendamento%'`).run();
   const faqCount = db.prepare('SELECT COUNT(*) as c FROM faqs').get().c;
-  if (faqCount === 0) {
+  if (faqCount < 4) {
+    db.prepare('DELETE FROM faqs').run();
     const insertFaq = db.prepare(`
       INSERT INTO faqs (question, answer, category, is_published, sort_order)
       VALUES (?, ?, ?, 1, ?)
     `);
     insertFaq.run(
-      'Como solicitar uma reserva ou agendamento?',
-      'Você pode escolher o clube, destino ou viagem desejada aqui no site, selecionar a data pretendida e a quantidade de pessoas e enviar sua solicitação. A Celina receberá seu pedido no painel administrativo, verificará a disponibilidade e atualizará o status da sua reserva.',
-      'Agendamentos',
+      'Como saber mais informações sobre cada clube?',
+      'Acesse a seção "Clubes" no menu principal e clique em "Saber mais sobre este clube". Lá você encontra fotos ampliadas, descrição completa, estrutura disponível, tipos de piscinas, horário de funcionamento e regras de cada clube.',
+      'Clubes e Estrutura',
       1
     );
     insertFaq.run(
-      'Como consultar valores e condições de cada clube ou viagem?',
-      'Os valores e condições comerciais cadastrados ficam visíveis na página de detalhes de cada clube ou viagem. Caso o item esteja sob consulta ou você deseje um orçamento específico para seu grupo, basta clicar em "Consultar disponibilidade" ou "Falar pelo WhatsApp".',
+      'Como consultar valores e condições de cada clube?',
+      'Os valores de referência e condições comerciais cadastrados pela administração ficam visíveis na página de detalhes de cada clube. Caso queira consultar condições específicas para sua família ou grupo, você pode falar diretamente com nossa equipe.',
       'Valores e Consultas',
       2
     );
     insertFaq.run(
-      'Como funciona o acompanhamento do meu agendamento?',
-      'Ao criar sua conta gratuita no botão "Entrar", você tem acesso à Área do Cliente. Lá é possível visualizar o código identificador de cada solicitação e acompanhar todas as etapas (Aguardando análise, Aprovado, Aguardando pagamento, Confirmado ou Concluído).',
-      'Agendamentos',
+      'Meu login fica salvo no meu celular ou computador?',
+      'Sim! Ao acessar sua conta na aba "Entrar" com a opção "Salvar meu login e manter conectado neste dispositivo" marcada, seu acesso permanece salvo no seu aparelho por até 30 dias sem precisar digitar a senha novamente.',
+      'Conta e Acesso',
       3
-    );
-    insertFaq.run(
-      'Quais são as formas de pagamento?',
-      'As formas e condições de pagamento são informadas na descrição comercial de cada clube, locação ou pacote de viagem e confirmadas diretamente com a Celina Sousa Turismo durante a aprovação da sua solicitação.',
-      'Pagamentos',
-      4
     );
     insertFaq.run(
       'Como entrar em contato direto com a Celina Sousa Turismo?',
       'Você pode falar diretamente pelo WhatsApp no número (64) 9 9206-5866, acompanhar as novidades no Instagram @celinasousaturismo ou enviar uma mensagem pelo formulário na página de Contato.',
       'Atendimento',
-      5
-    );
-    insertFaq.run(
-      'Como consultar a disponibilidade de uma viagem ou excursão?',
-      'Acesse a seção "Viagens e Pacotes" no menu principal para conferir o status atualizado de cada roteiro (Disponível, Poucas vagas, Em breve, Esgotada ou Encerrada) e enviar sua solicitação de reserva.',
-      'Viagens',
-      6
+      4
     );
   }
 }

@@ -166,19 +166,17 @@ export default function AboutPage() {
               </div>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => openBookingModal()}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-blue-700 hover:from-brand-500 hover:to-blue-600 text-white text-sm font-extrabold shadow-md transition-all"
-                >
-                  <CalendarPlus className="w-4 h-4" />
-                  <span>Solicitar Agendamento</span>
-                </button>
                 <Link
                   to="/clubes"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-blue-700 hover:from-brand-500 hover:to-blue-600 text-white text-sm font-extrabold shadow-md transition-all"
+                >
+                  <span>Conhecer Nossos Clubes e Destinos</span>
+                </Link>
+                <Link
+                  to="/contato"
                   className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 text-sm font-bold transition-all"
                 >
-                  <span>Explorar Clubes e Destinos</span>
+                  <span>Entrar em Contato</span>
                 </Link>
               </div>
             </div>

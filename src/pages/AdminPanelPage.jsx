@@ -3,8 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   LayoutDashboard,
   Building2,
-  Compass,
-  CalendarCheck2,
   Users,
   Settings,
   MessageSquare,
@@ -22,8 +20,6 @@ import AdminLoginPage from './AdminLoginPage';
 import AdminFirstAccessModal from './admin/AdminFirstAccessModal';
 import AdminDashboardTab from './admin/AdminDashboardTab';
 import AdminClubsTab from './admin/AdminClubsTab';
-import AdminTripsTab from './admin/AdminTripsTab';
-import AdminBookingsTab from './admin/AdminBookingsTab';
 import AdminCustomersTab from './admin/AdminCustomersTab';
 import AdminContentTab from './admin/AdminContentTab';
 import AdminAccountMessagesTab from './admin/AdminAccountMessagesTab';
@@ -85,9 +81,12 @@ export default function AdminPanelPage() {
     );
   }
 
-  // Security check: If not logged in, render the dedicated Admin Login Portal
+  // If not logged in, redirect to /entrar on the main site, or render AdminLoginPage on standalone portal
   if (!user) {
-    return <AdminLoginPage isStandalonePortal={isAdminPortalApp()} />;
+    if (isAdminPortalApp()) {
+      return <AdminLoginPage isStandalonePortal />;
+    }
+    return <AdminLoginPage isStandalonePortal={false} />;
   }
 
   // Security check: Customer accounts are strictly blocked from accessing Admin Panel
@@ -128,19 +127,12 @@ export default function AdminPanelPage() {
 
   const navItems = [
     { id: 'dashboard', label: 'Visão Geral', icon: LayoutDashboard },
-    {
-      id: 'agendamentos',
-      label: 'Agendamentos',
-      icon: CalendarCheck2,
-      badge: metrics.pendingBookings || null,
-    },
     { id: 'clubes', label: 'Gerenciar Clubes', icon: Building2 },
-    { id: 'viagens', label: 'Gerenciar Viagens', icon: Compass },
-    { id: 'clientes', label: 'Gerenciar Clientes', icon: Users },
-    { id: 'conteudo', label: 'Conteúdo do Site', icon: Settings },
+    { id: 'conteudo', label: 'Conteúdo & Fotos do Site', icon: Settings },
+    { id: 'clientes', label: 'Clientes Cadastrados', icon: Users },
     {
       id: 'mensagens',
-      label: 'Mensagens & Conta',
+      label: 'Mensagens & Conta ADM',
       icon: MessageSquare,
       badge: metrics.unreadMessages || null,
     },
@@ -176,7 +168,7 @@ export default function AdminPanelPage() {
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-brand-400" />
-                <span className="hidden sm:inline">Ir para Site de Clientes</span>
+                <span className="hidden sm:inline">Ver Site Público</span>
                 <span className="sm:hidden">Site</span>
               </a>
             ) : (
@@ -185,7 +177,7 @@ export default function AdminPanelPage() {
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-brand-400" />
-                <span className="hidden sm:inline">Ir para Site de Clientes</span>
+                <span className="hidden sm:inline">Ver Site Público</span>
                 <span className="sm:hidden">Site</span>
               </Link>
             )}
@@ -208,7 +200,7 @@ export default function AdminPanelPage() {
               type="button"
               onClick={async () => {
                 await logout();
-                navigate(isAdminPortalApp() ? '/' : '/admin');
+                navigate(isAdminPortalApp() ? '/' : '/entrar');
               }}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-200 hover:text-white text-xs font-bold border border-rose-500/30 transition-colors"
             >
@@ -347,14 +339,8 @@ export default function AdminPanelPage() {
             onNavigateTab={(t) => handleSelectTab(t)}
           />
         )}
-        {activeTab === 'agendamentos' && (
-          <AdminBookingsTab onDataChanged={loadDashboard} />
-        )}
         {activeTab === 'clubes' && (
           <AdminClubsTab onDataChanged={loadDashboard} />
-        )}
-        {activeTab === 'viagens' && (
-          <AdminTripsTab onDataChanged={loadDashboard} />
         )}
         {activeTab === 'clientes' && (
           <AdminCustomersTab onDataChanged={loadDashboard} />

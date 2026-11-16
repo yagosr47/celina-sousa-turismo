@@ -81,13 +81,13 @@ router.post('/register', (req, res) => {
       recipientUserId: newUserId,
       type: 'welcome',
       title: 'Bem-vindo(a) à Celina Sousa Turismo!',
-      message: 'Sua conta foi criada com sucesso. Agora você pode solicitar agendamentos e acompanhar o status em tempo real.',
-      link: '/minha-conta',
+      message: 'Sua conta foi criada e salva neste dispositivo. Explore todos os detalhes dos nossos clubes e destinos!',
+      link: '/clubes',
     });
 
     const safeUser = sanitizeUser(user);
-    const token = signUserToken(safeUser);
-    setAuthCookie(res, token);
+    const token = signUserToken(safeUser, true);
+    setAuthCookie(res, token, true);
 
     return res.status(201).json({
       message: 'Conta criada com sucesso!',
@@ -100,11 +100,12 @@ router.post('/register', (req, res) => {
   }
 });
 
-// POST /api/auth/login (Customer & Admin Login)
+// POST /api/auth/login (Unified Customer & Admin Login)
 router.post('/login', (req, res) => {
   try {
-    const { identifier, email, username, password, loginMode } = req.body;
+    const { identifier, email, username, password, loginMode, rememberDevice } = req.body;
     const rawLogin = String(identifier || email || username || '').trim();
+    const shouldRemember = rememberDevice !== false;
 
     if (!rawLogin || !password) {
       return res.status(400).json({ error: 'Informe suas credenciais de acesso e senha.' });
@@ -157,8 +158,8 @@ router.post('/login', (req, res) => {
     }
 
     const safeUser = sanitizeUser(user);
-    const token = signUserToken(safeUser);
-    setAuthCookie(res, token);
+    const token = signUserToken(safeUser, shouldRemember);
+    setAuthCookie(res, token, shouldRemember);
 
     if (user.role === 'admin') {
       logAdminAction({
