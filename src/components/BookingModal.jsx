@@ -203,15 +203,15 @@ export default function BookingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl max-h-[92vh] sm:max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-800 px-6 py-5 text-white flex items-center justify-between">
+        <div className="shrink-0 bg-gradient-to-r from-slate-950 via-brand-900 to-slate-950 px-5 sm:px-6 py-4 sm:py-5 text-white flex items-center justify-between">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-200">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-300">
               Celina Sousa Turismo • Caldas Locações
             </span>
-            <h2 className="text-xl font-bold mt-0.5">
+            <h2 className="text-lg sm:text-xl font-extrabold mt-0.5">
               {step === 3 ? 'Solicitação Registrada' : 'Solicitar Agendamento / Reserva'}
             </h2>
           </div>
@@ -227,29 +227,29 @@ export default function BookingModal() {
 
         {/* Step Indicator */}
         {step < 3 && (
-          <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-3 text-xs font-bold">
+          <div className="shrink-0 px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2 sm:gap-3 text-xs font-bold">
             <div
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-1.5 sm:gap-2 ${
                 step === 1 ? 'text-brand-700' : 'text-emerald-600'
               }`}
             >
               <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-white ${
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-white shrink-0 ${
                   step === 1 ? 'bg-brand-600' : 'bg-emerald-600'
                 }`}
               >
                 1
               </span>
-              <span>Destino, Data e Pessoas</span>
+              <span className="truncate">Destino e Data</span>
             </div>
             <div className="h-px flex-1 bg-slate-300" />
             <div
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-1.5 sm:gap-2 ${
                 step === 2 ? 'text-brand-700' : 'text-slate-400'
               }`}
             >
               <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                   step === 2 ? 'bg-brand-600 text-white' : 'bg-slate-200 text-slate-600'
                 }`}
               >
@@ -260,7 +260,7 @@ export default function BookingModal() {
           </div>
         )}
 
-        <div className="p-6 sm:p-8 max-h-[80vh] overflow-y-auto">
+        <div className="p-5 sm:p-8 flex-1 overflow-y-auto">
           {errorMsg && (
             <div className="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />

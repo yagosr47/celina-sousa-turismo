@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getCustomerSiteUrl } from '../lib/api';
+import BrandLogo from '../components/BrandLogo';
 
 export default function AdminLoginPage({ isStandalonePortal = false }) {
   const { user, login, logout, showToast, siteData } = useApp();
@@ -61,22 +62,8 @@ export default function AdminLoginPage({ isStandalonePortal = false }) {
       {/* Top Bar */}
       <header className="relative z-10 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-white rounded-xl px-2.5 py-1 shadow">
-              <img
-                src={settings.logo_url || '/assets/images/logo-original.jpeg'}
-                alt="Celina Sousa Turismo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-            <div>
-              <span className="text-sm sm:text-base font-extrabold text-white block leading-tight">
-                {settings.company_name || 'Celina Sousa Turismo'}
-              </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400">
-                Portal Administrativo Exclusivo
-              </span>
-            </div>
+          <div className="flex items-center gap-3 min-w-0">
+            <BrandLogo variant="dark" size="sm" />
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-400">

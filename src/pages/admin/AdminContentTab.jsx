@@ -317,7 +317,7 @@ export default function AdminContentTab() {
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <img
-                  src={settings.logo_url || '/assets/images/logo-original.jpeg'}
+                  src={settings.logo_url || '/assets/images/logo-profissional.svg'}
                   alt="Logo atual"
                   className="h-16 w-24 object-contain bg-white rounded-xl border border-slate-200 p-1"
                 />

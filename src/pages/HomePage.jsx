@@ -22,6 +22,7 @@ import { buildWhatsAppUrl } from '../lib/api';
 import ClubCard from '../components/ClubCard';
 import TripCard from '../components/TripCard';
 import ImageLightbox from '../components/ImageLightbox';
+import { ProfessionalEmblem } from '../components/BrandLogo';
 
 export default function HomePage() {
   const { siteData, loadingSite, openBookingModal } = useApp();
@@ -52,38 +53,40 @@ export default function HomePage() {
     (settings.promotions_banner_title || settings.promotions_banner_text);
 
   return (
-    <div className="space-y-20 pb-20">
+    <div className="space-y-12 sm:space-y-20 pb-12 sm:pb-20">
       {/* 1. HERO BANNER PRINCIPAL */}
-      <section className="relative min-h-[580px] lg:min-h-[640px] flex items-center overflow-hidden bg-slate-900">
+      <section className="relative min-h-[520px] sm:min-h-[600px] lg:min-h-[660px] flex items-center overflow-hidden bg-slate-900">
         <img
           src={settings.hero_banner_url || '/assets/images/hero-resort.jpg'}
           alt={settings.company_name || 'Celina Sousa Turismo'}
           className="absolute inset-0 w-full h-full object-cover object-center scale-105 transition-transform duration-1000"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-slate-900/40" />
+        <div className="absolute inset-0 bg-gradient-to-b sm:bg-gradient-to-r from-slate-950/92 via-slate-950/75 to-slate-900/55" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/20 border border-brand-400/40 backdrop-blur-md text-brand-200 text-xs sm:text-sm font-bold">
-              <Plane className="w-4 h-4 text-brand-300" />
-              <span>{settings.hero_badge || 'Celina Sousa Turismo • Caldas Locações'}</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 w-full">
+          <div className="max-w-3xl space-y-5 sm:space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/20 border border-brand-400/40 backdrop-blur-md text-brand-200 text-xs sm:text-sm font-bold">
+              <Plane className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-300 shrink-0" />
+              <span className="truncate">
+                {settings.hero_badge || 'Celina Sousa Turismo • Caldas Locações'}
+              </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.13]">
               {settings.hero_title ||
                 'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado'}
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-200 leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-lg text-slate-200 leading-relaxed max-w-2xl">
               {settings.hero_subtitle ||
                 'Conheça opções de lazer, clubes, hospedagens e viagens selecionadas por Celina Sousa Turismo. Solicite informações ou seu agendamento online com praticidade e segurança.'}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="pt-1 sm:pt-2 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4">
               <button
                 type="button"
                 onClick={() => openBookingModal()}
-                className="inline-flex items-center gap-2.5 px-6 py-4 rounded-2xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl transition-all hover:-translate-y-0.5"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-sky-400 hover:from-brand-400 hover:to-sky-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-brand-500/25 transition-all hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <CalendarPlus className="w-5 h-5" />
                 <span>Solicitar Agendamento</span>
@@ -93,7 +96,7 @@ export default function HomePage() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base shadow-xl transition-all hover:-translate-y-0.5"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-emerald-600/25 transition-all hover:-translate-y-0.5 active:scale-[0.99]"
               >
                 <MessageCircle className="w-5 h-5" />
                 <span>Atendimento no WhatsApp</span>
@@ -101,7 +104,7 @@ export default function HomePage() {
 
               <Link
                 to="/clubes"
-                className="inline-flex items-center gap-2 px-5 py-4 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-sm sm:text-base border border-white/20 transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 sm:py-4 rounded-2xl bg-white/12 hover:bg-white/20 backdrop-blur-md text-white font-semibold text-sm sm:text-base border border-white/20 transition-all"
               >
                 <span>Ver Clubes e Destinos</span>
                 <ArrowRight className="w-4 h-4" />
@@ -109,17 +112,17 @@ export default function HomePage() {
             </div>
 
             {/* Trust badges */}
-            <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl text-xs text-slate-200">
+            <div className="pt-3 sm:pt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-2xl text-xs text-slate-200">
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
-                <ShieldCheck className="w-5 h-5 text-brand-300 shrink-0" />
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
                 <span>Atendimento direto e transparente</span>
               </div>
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
-                <Building2 className="w-5 h-5 text-brand-300 shrink-0" />
+                <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
                 <span>Clubes, Parques e Caldas Locações</span>
               </div>
               <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-md rounded-xl px-3.5 py-2.5 border border-white/10">
-                <Compass className="w-5 h-5 text-brand-300 shrink-0" />
+                <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-brand-300 shrink-0" />
                 <span>Acompanhamento online da reserva</span>
               </div>
             </div>
@@ -127,60 +130,140 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* QUICK ACCESS STRIP FOR MOBILE & DESKTOP */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 relative z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <Link
+            to="/clubes"
+            className="group bg-white hover:bg-brand-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                Clubes e Parques
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">Lazer e águas termais</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/viagens"
+            className="group bg-white hover:bg-brand-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <Compass className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                Viagens e Pacotes
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">Roteiros e excursões</p>
+            </div>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => openBookingModal()}
+            className="group bg-white hover:bg-brand-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 text-left transition-all hover:-translate-y-0.5"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <CalendarPlus className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                Agendar Online
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">Solicitação rápida</p>
+            </div>
+          </button>
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group bg-white hover:bg-emerald-50/40 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-lg shadow-slate-900/5 flex items-center gap-3.5 transition-all hover:-translate-y-0.5"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                WhatsApp Direto
+              </p>
+              <p className="text-[11px] text-emerald-700 font-semibold truncate">
+                {settings.phone_display || '(64) 9 9206-5866'}
+              </p>
+            </div>
+          </a>
+        </div>
+      </section>
+
       {/* 2. APRESENTAÇÃO DA CELINA SOUSA TURISMO */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-gradient-to-br from-brand-50 via-white to-brand-50 rounded-2xl p-6 border border-brand-100 shadow-inner">
-            <img
-              src={settings.logo_url || '/assets/images/logo-original.jpeg'}
-              alt={settings.company_name || 'Celina Sousa Turismo'}
-              className="max-h-56 w-auto object-contain rounded-xl"
-            />
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-5 relative overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-brand-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl">
+            <div className="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-brand-500/20 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-44 h-44 rounded-full bg-sky-400/15 blur-2xl pointer-events-none" />
+
+            <ProfessionalEmblem className="w-24 h-24 sm:w-28 sm:h-28 drop-shadow-xl" />
+
+            <div className="mt-4 text-center space-y-1">
+              <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                {settings.company_name || 'Celina Sousa Turismo'}
+              </h3>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-300 text-xs font-extrabold uppercase tracking-widest">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                {settings.company_subtitle || 'Caldas Locações'}
+              </span>
+            </div>
+
+            <div className="mt-6 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition-colors shadow"
               >
-                <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
-                {settings.phone_display || '(64) 9 9206-5866'}
+                <PhoneCall className="w-3.5 h-3.5" />
+                <span>{settings.phone_display || '(64) 9 9206-5866'}</span>
               </a>
               <a
                 href={settings.instagram_url || 'https://www.instagram.com/celinasousaturismo/'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brand-50 text-brand-800 border border-brand-200 text-xs font-bold hover:bg-brand-100 transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold transition-colors"
               >
-                <Instagram className="w-3.5 h-3.5 text-brand-600" />
-                {settings.instagram_handle || '@celinasousaturismo'}
+                <Instagram className="w-3.5 h-3.5 text-brand-300" />
+                <span>{settings.instagram_handle || '@celinasousaturismo'}</span>
               </a>
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-5">
+          <div className="lg:col-span-7 space-y-4 sm:space-y-5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider border border-brand-200">
               Apresentação Institucional
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900">
               {settings.presentation_title || 'Bem-vindo à Celina Sousa Turismo'}
             </h2>
-            <p className="text-slate-600 leading-relaxed text-base sm:text-lg whitespace-pre-line">
+            <p className="text-slate-600 leading-relaxed text-sm sm:text-lg whitespace-pre-line">
               {settings.presentation_text ||
                 'A Celina Sousa Turismo — Caldas Locações atua na divulgação e intermediação de locações, clubes, parques aquáticos, hotéis, destinos turísticos e viagens. Nosso objetivo é oferecer um atendimento transparente, organizado e direto para que você e sua família planejem seus momentos de lazer com tranquilidade.'}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="pt-2 grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3">
               <Link
                 to="/sobre"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-all"
               >
                 <span>Conhecer Mais Sobre a Empresa</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/contato"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-brand-300 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-bold transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-brand-300 bg-brand-50 hover:bg-brand-100 text-brand-800 text-sm font-bold transition-all"
               >
                 <span>Solicitar Informações</span>
               </Link>

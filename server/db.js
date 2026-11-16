@@ -415,11 +415,11 @@ function seedInitialData() {
     `).run(config.adminPassBcrypt, existingAdmin.id);
   }
 
-  // 2. Seed Site Settings with ONLY verified facts from the official brand image & prompt
+  // 2. Seed Site Settings with ONLY verified facts from the official brand & prompt
   const defaultSettings = {
     company_name: 'Celina Sousa Turismo',
     company_subtitle: 'Caldas Locações',
-    logo_url: '/assets/images/logo-original.jpeg',
+    logo_url: '/assets/images/logo-profissional.svg',
     hero_badge: 'Celina Sousa Turismo • Caldas Locações',
     hero_title: 'Clubes, Locações, Destinos e Viagens com Atendimento Personalizado',
     hero_subtitle: 'Conheça opções de lazer, clubes, hospedagens e viagens selecionadas por Celina Sousa Turismo. Solicite informações ou seu agendamento online com praticidade e segurança.',
@@ -461,6 +461,11 @@ function seedInitialData() {
   for (const [key, value] of Object.entries(defaultSettings)) {
     insertSetting.run(key, value);
   }
+  db.prepare(`
+    UPDATE site_settings
+    SET value = '/assets/images/logo-profissional.svg'
+    WHERE key = 'logo_url' AND value = '/assets/images/logo-original.jpeg'
+  `).run();
 
   // 3. Seed Initial Gallery Items (using authentic generated tourism images, editable by Celina)
   const galleryCount = db.prepare('SELECT COUNT(*) as c FROM gallery_items').get().c;

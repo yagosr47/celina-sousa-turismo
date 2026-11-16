@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { apiFetch } from '../lib/api';
+import { ProfessionalEmblem } from '../components/BrandLogo';
 
 export default function AuthPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -174,12 +175,8 @@ export default function AuthPage() {
       <div className="w-full max-w-xl bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
         {/* Top Brand Header */}
         <div className="bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 px-6 py-7 text-center text-white space-y-3">
-          <div className="inline-flex items-center justify-center bg-white rounded-2xl px-3 py-1.5 shadow">
-            <img
-              src={settings.logo_url || '/assets/images/logo-original.jpeg'}
-              alt="Celina Sousa Turismo"
-              className="h-12 w-auto object-contain"
-            />
+          <div className="inline-flex items-center justify-center">
+            <ProfessionalEmblem className="w-16 h-16 drop-shadow-lg" />
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-extrabold">

@@ -10,7 +10,7 @@ export function AppProvider({ children }) {
     settings: {
       company_name: 'Celina Sousa Turismo',
       company_subtitle: 'Caldas Locações',
-      logo_url: '/assets/images/logo-original.jpeg',
+      logo_url: '/assets/images/logo-profissional.svg',
       whatsapp_number: '64992065866',
       phone_display: '(64) 9 9206-5866',
       instagram_handle: '@celinasousaturismo',

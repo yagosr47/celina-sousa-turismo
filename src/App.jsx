@@ -5,6 +5,7 @@ import { isAdminPortalApp } from './lib/api';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
+import MobileBottomNav from './components/MobileBottomNav';
 import BookingModal from './components/BookingModal';
 import ToastBanner from './components/ToastBanner';
 
@@ -53,7 +54,7 @@ function AppShell() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 pb-16 md:pb-0">
       <ScrollToTop />
       <ToastBanner />
       <BookingModal />
@@ -80,6 +81,7 @@ function AppShell() {
 
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <WhatsAppFloatingButton />}
+      {!isAdminRoute && <MobileBottomNav />}
     </div>
   );
 }
