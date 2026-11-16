@@ -128,15 +128,6 @@ export default function Footer() {
                   Acompanhar solicitações
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/entrar?modo=admin"
-                  className="inline-flex items-center gap-1.5 text-slate-400 hover:text-brand-300 transition-colors pt-1"
-                >
-                  <ShieldCheck className="w-4 h-4 text-brand-400" />
-                  Acesso administrativo (Celina)
-                </Link>
-              </li>
             </ul>
           </div>
 

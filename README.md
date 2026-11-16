@@ -63,16 +63,25 @@ Variáveis disponíveis no `.env`:
 - `DATABASE_PATH=./data/celina_turismo.db` — Caminho do arquivo de banco de dados SQLite
 - `UPLOADS_DIR=./public/uploads` — Diretório persistente para armazenamento das fotos enviadas pela Celina
 
-### 4. Executar em ambiente de desenvolvimento
+### 4. Executar em ambiente de desenvolvimento (2 Sites Separados e Conectados)
 ```bash
 npm run dev
 ```
-- O frontend estará disponível em `http://0.0.0.0:5173`
-- A API backend estará rodando em `http://0.0.0.0:3001`
+Esse comando sobe simultaneamente os dois sites independentes conectados ao mesmo servidor e banco de dados:
+- **Site de Clientes (`http://0.0.0.0:5173`):** Site público e área exclusiva dos clientes (sem exibir login administrativo para visitantes).
+- **Portal ADM da Celina (`http://0.0.0.0:5174`):** Site exclusivo para o login e gerenciamento administrativo da Celina Sousa Turismo.
+- **Servidor API & Banco de Dados (`http://0.0.0.0:3001`):** Backend compartilhado que sincroniza tudo em tempo real entre os dois sites.
 
 ### 5. Build e Execução para Produção (Publicação)
-Para compilar o projeto para produção e servir o site e a API integrados pelo servidor Node.js:
+Você pode publicar os dois ambientes em domínios/subdomínios separados (ex.: `celinasousaturismo.com.br` e `admin.celinasousaturismo.com.br`) ou unificados:
 ```bash
+# Gerar build separado do Site de Clientes (dist/customer)
+npm run build:customer
+
+# Gerar build separado do Portal ADM da Celina (dist/admin)
+npm run build:admin
+
+# Ou build padrão unificado + iniciar servidor
 npm run build
 npm start
 ```

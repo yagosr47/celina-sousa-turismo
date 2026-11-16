@@ -29,11 +29,15 @@ export default function AuthPage() {
 
   useEffect(() => {
     const paramMode = searchParams.get('modo');
-    if (paramMode && ['login', 'cadastro', 'admin', 'recuperar'].includes(paramMode)) {
+    if (paramMode === 'admin') {
+      navigate('/admin', { replace: true });
+      return;
+    }
+    if (paramMode && ['login', 'cadastro', 'recuperar'].includes(paramMode)) {
       setMode(paramMode);
       setError('');
     }
-  }, [searchParams]);
+  }, [searchParams, navigate]);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -195,12 +199,12 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* Mode Switcher Tabs */}
-        <div className="grid grid-cols-3 bg-slate-100 p-1.5 border-b border-slate-200 text-xs sm:text-sm font-bold">
+        {/* Mode Switcher Tabs (Customer Only) */}
+        <div className="grid grid-cols-2 bg-slate-100 p-1.5 border-b border-slate-200 text-xs sm:text-sm font-bold">
           <button
             type="button"
             onClick={() => switchMode('login')}
-            className={`py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               mode === 'login' || mode === 'recuperar'
                 ? 'bg-white text-brand-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -213,7 +217,7 @@ export default function AuthPage() {
           <button
             type="button"
             onClick={() => switchMode('cadastro')}
-            className={`py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
+            className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
               mode === 'cadastro'
                 ? 'bg-white text-brand-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -221,19 +225,6 @@ export default function AuthPage() {
           >
             <UserPlus className="w-4 h-4 shrink-0" />
             <span>Criar uma conta</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => switchMode('admin')}
-            className={`py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              mode === 'admin'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span>Acesso administrativo</span>
           </button>
         </div>
 
