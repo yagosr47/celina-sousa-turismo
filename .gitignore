@@ -1,0 +1,22 @@
+# Node & Build
+node_modules/
+dist/
+.vite/
+
+# Environment Secrets
+.env
+.env.local
+.env.*.local
+
+# Database & Local Storage Runtime
+data/*.db
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs & OS
+*.log
+.DS_Store
+Unselected files/
