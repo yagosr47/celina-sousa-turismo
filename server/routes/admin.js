@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const config = require('../config');
 const { db, slugify } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { upload, isValidImageHeader } = require('../middleware/upload');
@@ -159,8 +160,15 @@ router.post('/upload', (req, res) => {
           error: `O arquivo "${file.originalname}" não é uma imagem válida e foi bloqueado por segurança.`,
         });
       }
+      let finalUrl = `/uploads/${file.filename}`;
+      if (config.isServerless) {
+        try {
+          const buf = fs.readFileSync(file.path);
+          finalUrl = `data:${file.mimetype || 'image/jpeg'};base64,${buf.toString('base64')}`;
+        } catch {}
+      }
       uploadedUrls.push({
-        url: `/uploads/${file.filename}`,
+        url: finalUrl,
         originalName: file.originalname,
         size: file.size,
       });

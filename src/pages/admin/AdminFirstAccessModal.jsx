@@ -9,7 +9,7 @@ export default function AdminFirstAccessModal() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [newUsername, setNewUsername] = useState(user?.username || 'celina.admin');
+  const [newUsername, setNewUsername] = useState(user?.username || '');
   const [newEmail, setNewEmail] = useState(user?.email || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

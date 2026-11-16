@@ -153,7 +153,7 @@ export default function AdminLoginPage({ isStandalonePortal = false }) {
             <form onSubmit={handleAdminSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Usuário ou E-mail Administrativo
+                  Usuário
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -161,7 +161,8 @@ export default function AdminLoginPage({ isStandalonePortal = false }) {
                     type="text"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="celina.admin"
+                    placeholder="Digite seu usuário"
+                    autoComplete="off"
                     className="w-full rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 pl-10 pr-4 py-3 text-sm focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 outline-none"
                     required
                   />
