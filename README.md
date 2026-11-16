@@ -58,8 +58,6 @@ cp .env.example .env
 Variáveis disponíveis no `.env`:
 - `PORT=3001` — Porta do servidor backend Express
 - `JWT_SECRET` — Chave secreta longa e aleatória para assinatura de sessões JWT
-- `ADMIN_INIT_USERNAME` — Usuário inicial de desenvolvimento para criação da primeira conta administrativa
-- `ADMIN_INIT_PASSWORD` — Senha temporária inicial (exige troca obrigatória no primeiro acesso)
 - `DATABASE_PATH=./data/celina_turismo.db` — Caminho do arquivo de banco de dados SQLite
 - `UPLOADS_DIR=./public/uploads` — Diretório persistente para armazenamento das fotos enviadas pela Celina
 
@@ -89,10 +87,8 @@ Em produção (`NODE_ENV=production`), o servidor Express serve tanto a API (`/a
 
 ---
 
-## Acesso Administrativo Inicial
+## Segurança e Acesso Administrativo
 
-1. No topo do site, clique em **"Entrar"** -> **"Acesso administrativo"** (ou acesse `/entrar?modo=admin`).
-2. Na primeira inicialização em ambiente de desenvolvimento, utilize as credenciais configuradas no `.env`:
-   - **Usuário:** `celina.admin`
-   - **Senha temporária:** configurada em `ADMIN_INIT_PASSWORD`
-3. Assim que entrar pela primeira vez, o sistema exibirá automaticamente a tela de **Segurança do Primeiro Acesso**, exigindo a substituição da senha temporária por uma senha pessoal definitiva da Celina.
+- As credenciais da administradora são protegidas por hashes criptográficos irreversíveis (SHA-256 e Bcrypt) no backend e nunca ficam expostas em texto puro no código-fonte ou no repositório.
+- O acesso administrativo é realizado exclusivamente pelo **Portal ADM (`/admin` ou `/painel-celina`)**.
+

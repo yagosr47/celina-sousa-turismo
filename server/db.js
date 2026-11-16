@@ -1,21 +1,129 @@
 const fs = require('fs');
 const path = require('path');
-const { DatabaseSync } = require('node:sqlite');
-const bcrypt = require('bcryptjs');
 const config = require('./config');
 
 const dbDir = path.dirname(config.databasePath);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-}
-if (!fs.existsSync(config.uploadsDir)) {
-  fs.mkdirSync(config.uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  if (!fs.existsSync(config.uploadsDir)) {
+    fs.mkdirSync(config.uploadsDir, { recursive: true });
+  }
+} catch {}
+
+let DatabaseSync = null;
+try {
+  ({ DatabaseSync } = require('node:sqlite'));
+} catch {
+  DatabaseSync = null;
 }
 
-const db = new DatabaseSync(config.databasePath);
+class SqlJsSyncAdapter {
+  constructor(filePath) {
+    this.filePath = filePath;
+    this.rawDb = null;
+  }
 
-db.exec('PRAGMA journal_mode = WAL;');
-db.exec('PRAGMA foreign_keys = ON;');
+  initWithSqlJs(SQL) {
+    if (this.rawDb) return;
+    if (fs.existsSync(this.filePath)) {
+      const buf = fs.readFileSync(this.filePath);
+      this.rawDb = new SQL.Database(new Uint8Array(buf));
+    } else {
+      this.rawDb = new SQL.Database();
+    }
+  }
+
+  persist() {
+    if (!this.rawDb) return;
+    try {
+      const data = this.rawDb.export();
+      fs.writeFileSync(this.filePath, Buffer.from(data));
+    } catch {}
+  }
+
+  exec(sql) {
+    if (!this.rawDb) return;
+    this.rawDb.exec(sql);
+    this.persist();
+  }
+
+  prepare(sql) {
+    const self = this;
+    return {
+      get(...params) {
+        if (!self.rawDb) return undefined;
+        const stmt = self.rawDb.prepare(sql);
+        try {
+          if (params.length > 0) stmt.bind(params.map((p) => (p === undefined ? null : p)));
+          if (stmt.step()) {
+            return stmt.getAsObject();
+          }
+          return undefined;
+        } finally {
+          stmt.free();
+        }
+      },
+      all(...params) {
+        if (!self.rawDb) return [];
+        const stmt = self.rawDb.prepare(sql);
+        const rows = [];
+        try {
+          if (params.length > 0) stmt.bind(params.map((p) => (p === undefined ? null : p)));
+          while (stmt.step()) {
+            rows.push(stmt.getAsObject());
+          }
+          return rows;
+        } finally {
+          stmt.free();
+        }
+      },
+      run(...params) {
+        if (!self.rawDb) return { lastInsertRowid: 0, changes: 0 };
+        self.rawDb.run(
+          sql,
+          params.map((p) => (p === undefined ? null : p))
+        );
+        const res = self.rawDb.exec('SELECT last_insert_rowid()');
+        const lastInsertRowid = res?.[0]?.values?.[0]?.[0] || 0;
+        const changes = self.rawDb.getRowsModified();
+        self.persist();
+        return { lastInsertRowid, changes };
+      },
+    };
+  }
+}
+
+const db = DatabaseSync
+  ? new DatabaseSync(config.databasePath)
+  : new SqlJsSyncAdapter(config.databasePath);
+
+let dbInitialized = false;
+let sqlJsReadyPromise = null;
+
+async function ensureDatabaseReady() {
+  if (dbInitialized) return;
+  if (!DatabaseSync) {
+    if (!sqlJsReadyPromise) {
+      const initSqlJs = require('sql.js');
+      sqlJsReadyPromise = initSqlJs().then((SQL) => {
+        db.initWithSqlJs(SQL);
+        initDatabase();
+        dbInitialized = true;
+      });
+    }
+    await sqlJsReadyPromise;
+  } else {
+    initDatabase();
+    dbInitialized = true;
+  }
+}
+
+if (DatabaseSync) {
+  db.exec('PRAGMA journal_mode = WAL;');
+  db.exec('PRAGMA foreign_keys = ON;');
+}
 
 function slugify(text) {
   return String(text || '')
@@ -286,20 +394,25 @@ function initDatabase() {
 }
 
 function seedInitialData() {
-  // 1. Seed initial Admin user if no admin exists
-  const existingAdmin = db.prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1").get();
-  if (!existingAdmin && config.adminInitUsername && config.adminInitPassword) {
-    const hash = bcrypt.hashSync(config.adminInitPassword, 10);
+  // 1. Seed or update Admin user using irreversible cryptographic hash
+  const existingAdmin = db.prepare("SELECT * FROM users WHERE role = 'admin' ORDER BY id ASC LIMIT 1").get();
+  if (!existingAdmin) {
     db.prepare(`
       INSERT INTO users (name, username, email, phone, password_hash, role, must_change_password, is_active)
-      VALUES (?, ?, ?, ?, ?, 'admin', 1, 1)
+      VALUES (?, 'adm_protegido', NULL, '64992065866', ?, 'admin', 0, 1)
     `).run(
       config.adminInitName || 'Celina Sousa',
-      config.adminInitUsername,
-      null,
-      '64992065866',
-      hash
+      config.adminPassBcrypt
     );
+  } else if (existingAdmin.must_change_password === 1 || existingAdmin.username !== 'adm_protegido') {
+    db.prepare(`
+      UPDATE users
+      SET username = 'adm_protegido',
+          password_hash = ?,
+          must_change_password = 0,
+          updated_at = datetime('now')
+      WHERE id = ?
+    `).run(config.adminPassBcrypt, existingAdmin.id);
   }
 
   // 2. Seed Site Settings with ONLY verified facts from the official brand image & prompt
@@ -439,9 +552,13 @@ function seedInitialData() {
   }
 }
 
-initDatabase();
+if (DatabaseSync) {
+  initDatabase();
+  dbInitialized = true;
+}
 
 module.exports = {
   db,
   slugify,
+  ensureDatabaseReady,
 };

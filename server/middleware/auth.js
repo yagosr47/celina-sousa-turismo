@@ -45,7 +45,7 @@ function sanitizeUser(user) {
   return {
     id: user.id,
     name: user.name,
-    username: user.username,
+    username: user.username === 'adm_protegido' ? 'Administradora' : user.username,
     email: user.email,
     phone: user.phone,
     role: user.role,
